@@ -1,0 +1,49 @@
+@extends('app.layouts.main')
+@section('title', 'Kayıt Ol')
+@section('content')
+    <!-- page-title -->
+    <div class="tf-page-title style-2">
+        <div class="container-full">
+            <div class="heading text-center">Kayıt Ol</div>
+        </div>
+    </div>
+    <!-- /page-title -->
+
+    <section class="flat-spacing-10">
+        <div class="container">
+            <div class="form-register-wrap">
+                <div class="flat-title align-items-start gap-0 mb_30 px-0">
+                    <h5 class="mb_18">Kayıt Ol</h5>
+                    <p class="text_black-2">Erken Satış erişiminin yanı sıra özel yeni gelenler, trendler ve promosyonlar için kaydolun. Vazgeçmek için e-postalarımızdaki abonelikten çık seçeneğine tıklayın</p>
+                </div>
+                <div>
+                    <form id="register-form" action="{{route('register')}}" method="post" accept-charset="utf-8">
+                        @csrf
+                        <div class="tf-field style-1 mb_15">
+                            <input class="tf-field-input tf-input" placeholder=" " type="text" id="property1" name="name">
+                            <label class="tf-field-label fw-4 text_black-2" for="property1">Ad</label>
+                        </div>
+                        <div class="tf-field style-1 mb_15">
+                            <input class="tf-field-input tf-input" placeholder=" " type="text" id="property2" name="surname">
+                            <label class="tf-field-label fw-4 text_black-2" for="property2">Soyad</label>
+                        </div>
+                        <div class="tf-field style-1 mb_15">
+                            <input class="tf-field-input tf-input" placeholder=" " type="email" id="property3" name="email">
+                            <label class="tf-field-label fw-4 text_black-2" for="property3">E-Posta *</label>
+                        </div>
+                        <div class="tf-field style-1 mb_30">
+                            <input class="tf-field-input tf-input" placeholder=" " type="password" id="property4" name="password">
+                            <label class="tf-field-label fw-4 text_black-2" for="property4">Şifre *</label>
+                        </div>
+                        <div class="mb_20">
+                            <button type="submit" class="tf-btn w-100 radius-3 btn-fill animate-hover-btn justify-content-center">Kayıt Ol</button>
+                        </div>
+                        <div class="text-center">
+                            <a href="{{route('login')}}" class="tf-btn btn-line">Zaten bir hesabınız var mı? Buradan giriş yapın<i class="icon icon-arrow1-top-left"></i></a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+@endsection
