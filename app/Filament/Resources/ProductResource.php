@@ -2,19 +2,16 @@
 
 namespace App\Filament\Resources;
 
+use App\Enums\Admin\ProductStatusEnum;
+use App\Enums\ProductVariationType;
 use App\Filament\Resources\ProductResource\Pages;
+use App\Filament\Resources\ProductResource\Pages\EditProduct;
 use App\Filament\Resources\ProductResource\RelationManagers;
-use App\Models\Attribute;
-use App\Models\AttributeValue;
-use App\Models\Category;
 use App\Models\Product;
-use App\Models\VariantOption;
-use App\Models\VariantValue;
-use Filament\Actions\EditAction;
+use Exception;
 use Filament\Forms;
-use Filament\Forms\Components\CheckboxList;
 use Filament\Forms\Components\Grid;
-use Filament\Forms\Components\Repeater;
+use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
 use Filament\Forms\Components\Textarea;
@@ -23,16 +20,16 @@ use Filament\Forms\Components\Toggle;
 use Filament\Forms\Components\Wizard;
 use Filament\Forms\Components\Wizard\Step;
 use Filament\Forms\Form;
-use Filament\Forms\Get;
+use Filament\Pages\SubNavigationPosition;
+use Filament\Resources\Pages\Page;
 use Filament\Resources\Resource;
 use Filament\Tables;
-use Filament\Tables\Columns\BadgeColumn;
-use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Columns\ToggleColumn;
+use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Support\Str;
 
 class ProductResource extends Resource
 {
@@ -46,157 +43,189 @@ class ProductResource extends Resource
     protected static ?string $label = 'Ürün';
 
     protected static ?string $slug = 'products';
-
+    protected static SubNavigationPosition $subNavigationPosition = SubNavigationPosition::End;
 
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
                 Wizard::make([
-                    Step::make('Ürün Detayları')
+                    Step::make('Genel Bilgiler')
                         ->schema([
-                            Grid::make(2)
+                            Grid::make()
                                 ->schema([
-                                    TextInput::make('name')
-                                        ->label('Ürün Adı')
-                                        ->required()
-                                        ->maxLength(255),
-
                                     Select::make('category_id')
+                                        ->relationship('category', 'name')
                                         ->label('Kategori')
-                                        ->options(Category::query()->pluck('name', 'id'))
                                         ->searchable()
+                                        ->preload(),
+                                    TextInput::make('name')
+                                        ->label('Ad')
+                                        ->required()
+                                        ->maxLength(255)
+                                        ->live(onBlur: true)
+                                        ->afterStateUpdated(function (string $operation, $state, callable $set) {
+                                            $set("slug", Str::slug($state));
+                                        }),
+                                    TextInput::make('slug')
+                                        ->label('Slug')
                                         ->required(),
-                                ]),
-                            Textarea::make('short_description')
-                                ->label('Kısa Açıklama')
-                                ->required()
-                                ->rows(2),
-
-                            Forms\Components\RichEditor::make('description')
-                                ->required()
-                                ->label('Açıklama'),
-
-                            Grid::make(3)
-                                ->schema([
-                                    TextInput::make('base_price')
+                                    TextInput::make('cost_price')
+                                        ->label('Ürün Maliyeti')
+                                        ->numeric()
+                                        ->nullable()
+                                        ->prefix('₺'),
+                                    TextInput::make('selling_price')
                                         ->label('Satış Fiyatı')
                                         ->numeric()
-                                        ->required(),
-
-                                    TextInput::make('compare_price')
-                                        ->label('İndirim Öncesi Fiyat')
+                                        ->required()
+                                        ->prefix('₺'),
+                                    TextInput::make('discount_price')
+                                        ->label('İndirimli Satış Fiyatı')
                                         ->numeric()
-                                        ->nullable(),
-
-                                    TextInput::make('cost')
-                                        ->label('Maliyet')
-                                        ->numeric()
-                                        ->nullable(),
-                                ]),
+                                        ->nullable()
+                                        ->prefix('₺'),
+                                    Textarea::make('short_description')
+                                        ->label('Kısa Açıklama')
+                                        ->required()
+                                        ->rows(2)
+                                        ->maxLength(255)
+                                        ->columnSpanFull(),
+                                    RichEditor::make('description')
+                                        ->label('Ürün Açıklaması')
+                                        ->required()
+                                        ->toolbarButtons([
+                                            'blockquote', 'bold', 'bulletList', 'h2', 'h3', 'italic', 'underline',
+                                            'orderedList', 'redo', 'strike', 'undo', 'table',
+                                        ])
+                                        ->columnSpanFull(),
+                                    Select::make('status')
+                                        ->label('Durum')
+                                        ->options(ProductStatusEnum::labels())
+                                        ->default(ProductStatusEnum::PUBLISHED->value)
+                                        ->columnSpanFull(),
+                                ])
+                        ]),
+                    Step::make('Ürün Ayarları')
+                        ->schema([
                             Grid::make(3)
                                 ->schema([
-                                    Toggle::make('status')
-                                        ->label('Aktif')
-                                        ->default(true),
-
-                                    Toggle::make('is_featured')
-                                        ->label('Öne Çıkar'),
-
-                                    Toggle::make('is_new')
-                                        ->label('Yeni Ürün'),
-                                ]),
-                            Forms\Components\Section::make('SEO')
-                                ->schema([
-                                    Grid::make(1)
-                                        ->schema([
-                                            TextInput::make('meta_title')
-                                                ->label('Meta Başlık')
-                                                ->maxLength(255),
-
-                                            TextInput::make('meta_description')
-                                                ->label('Meta Açıklama')
-                                                ->maxLength(255),
-
-                                            TextInput::make('meta_keywords')
-                                                ->label('Meta Kelimeler')
-                                                ->helperText('kelimeleri virgül ile ayırarak yazınız. (gümüş, prılanta, zirkon)')
-                                                ->maxLength(255),
-                                        ]),
-                                ])->collapsed(),
+                                    Toggle::make('is_featured')->label('Öne Çıkar')->nullable(),
+                                    Toggle::make('is_new')->label('Yeni Ürün')->nullable(),
+                                    Toggle::make('is_best_seller')->label('Çok Satan')->nullable(),
+                                ])
                         ]),
-                    Step::make('Varyantlar')
+                    Step::make('SEO')
                         ->schema([
-                            Repeater::make('variants')
-                                ->relationship('variants')
-                                ->label('Varyantlar')
-                                ->schema([
-                                    Grid::make(3)
-                                        ->schema([
-                                            TextInput::make('sku')->required(),
-                                            TextInput::make('price')->numeric()->required(),
-                                            TextInput::make('stock')->numeric()->required(),
-                                        ]),
-
-                                    Repeater::make('attributeVariants')
-                                        ->relationship('attributeVariants')
-                                        ->label('Varyant Özellikleri')
-                                        ->schema([
-                                            Select::make('attribute_id')
-                                                ->label('Özellik')
-                                                ->options(Attribute::query()->pluck('name', 'id'))
-                                                ->reactive()
-                                                ->afterStateUpdated(fn($state, callable $set) => $set('attribute_value_id', null))
-                                                ->required(),
-
-                                            Select::make('attribute_value_id')
-                                                ->label('Değer')
-                                                ->options(fn(callable $get) => AttributeValue::query()->where('attribute_id', $get('attribute_id'))->pluck('value', 'id'))
-                                                ->required(),
-                                        ])
-                                        ->defaultItems(1)
-                                        ->columns(2)
-                                        ->addActionLabel('Özellik Ekle')
-                                        ->collapsible(),
-                                ])->addActionLabel('Varyant Ekle')
-
-                        ]),
-                    Step::make('Görseller')
-                        ->schema([
-                            SpatieMediaLibraryFileUpload::make('images')
-                                ->label('Ürün Görselleri')
-                                ->collection('products')
-                                ->multiple()
-                                ->reorderable()
-                                ->image()
-                                ->maxFiles(10)
+                            TextInput::make('meta_title')
+                                ->label('SEO Başlık')
+                                ->nullable()
+                                ->maxLength(100),
+                            TextInput::make('meta_description')
+                                ->label('SEO Açıklama')
+                                ->nullable()
+                                ->maxLength(255),
+                            TextInput::make('meta_keywords')
+                                ->label('SEO Anahtar Kelimeler')
+                                ->nullable()
+                                ->helperText('SEO Anahtar Kelimeleri virgül ile ayırarak giriniz'),
                         ]),
                 ])->skippable()
-                    ->columnSpanFull()
+                  ->columnSpanFull()
             ]);
     }
 
+    /**
+     * @throws Exception
+     */
     public static function table(Table $table): Table
     {
         return $table
             ->columns([
-                ImageColumn::make('image')
-                    ->label('Image')
-                    ->getStateUsing(fn($record) => $record->getFirstMediaUrl('products'))
-                    ->circular(),
-
+                Tables\Columns\SpatieMediaLibraryImageColumn::make('images')
+                    ->collection('images')
+                    ->limit(1)
+                    ->conversion('thumb')
+                    ->circular()
+                    ->label('Ürün Görseli'),
                 TextColumn::make('name')
-                    ->sortable()
-                    ->searchable(),
+                    ->words(10)
+                    ->label('Ad')
+                    ->searchable()
+                    ->sortable(),
 
-                TextColumn::make('base_price')
-                    ->badge()
+                TextColumn::make('slug')
+                    ->label('Slug')
+                    ->copyable()
+                    ->toggleable(),
+
+                TextColumn::make('cost_price')
+                    ->label('Maliyet')
+                    ->money('TRY')
+                    ->sortable()
+                    ->toggleable(),
+
+                TextColumn::make('selling_price')
+                    ->label('Satış Fiyatı')
                     ->money('TRY')
                     ->sortable(),
 
-                ToggleColumn::make('status')
-                    ->label('Active')
-                    ->sortable(),
+
+                TextColumn::make('is_featured')
+                    ->label('Öne Çıkan')
+                    ->badge()
+                    ->sortable()
+                    ->toggleable()
+                    ->formatStateUsing(fn($state) => $state ? 'Evet' : 'Hayır'),
+
+                TextColumn::make('is_new')
+                    ->label('Yeni Ürün')
+                    ->badge()
+                    ->sortable()
+                    ->toggleable()
+                    ->formatStateUsing(fn($state) => $state ? 'Evet' : 'Hayır'),
+
+                TextColumn::make('is_best_seller')
+                    ->label('Çok Satan')
+                    ->badge()
+                    ->sortable()
+                    ->toggleable()
+                    ->formatStateUsing(fn($state) => $state ? 'Evet' : 'Hayır'),
+
+                TextColumn::make('status')
+                    ->label('Durum')
+                    ->badge()
+                    ->colors(ProductStatusEnum::colors())
+                    ->formatStateUsing(fn($state) => ProductStatusEnum::labels()[$state->value] ?? $state->value),
+
+                TextColumn::make('created_at')
+                    ->label('Oluşturulma')
+                    ->dateTime()
+                    ->sortable()
+                    ->toggleable(),
+            ])
+            ->filters([
+                SelectFilter::make('status')
+                    ->label('Durum')
+                    ->options(ProductStatusEnum::labels()),
+                SelectFilter::make('is_featured')
+                    ->label('Öne Çıkar')
+                    ->options([
+                        '1' => 'Evet',
+                        '0' => 'Hayır',
+                    ]),
+                SelectFilter::make('is_new')
+                    ->label('Yeni Ürün')
+                    ->options([
+                        '1' => 'Evet',
+                        '0' => 'Hayır',
+                    ]),
+                SelectFilter::make('is_best_seller')
+                    ->label('Çok Satan')
+                    ->options([
+                        '1' => 'Evet',
+                        '0' => 'Hayır',
+                    ])
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
@@ -220,7 +249,20 @@ class ProductResource extends Resource
             'index' => Pages\ListProducts::route('/'),
             'create' => Pages\CreateProduct::route('/create'),
             'edit' => Pages\EditProduct::route('/{record}/edit'),
+            'images' => Pages\ProductImages::route('/{record}/images'),
+            'product-options' => Pages\ProductVariationTypes::route('/{record}/product-options'),
+            'product-variations' => Pages\ProductVariations::route('/{record}/product-variations'),
         ];
+    }
+
+    public static function getRecordSubNavigation(Page $page): array
+    {
+        return $page->generateNavigationItems([
+            EditProduct::class,
+            Pages\ProductImages::class,
+            Pages\ProductVariationTypes::class,
+            Pages\ProductVariations::class
+        ]);
     }
 
     public static function getNavigationBadge(): ?string

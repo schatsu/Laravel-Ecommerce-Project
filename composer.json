@@ -14,7 +14,7 @@
         "laravel/telescope": "^5.10",
         "laravel/tinker": "^2.10.1",
         "mtvs/eloquent-hashids": "^3.6",
-        "predis/predis": "^3.0",
+        "predis/predis": "^3.1",
         "realrashid/sweet-alert": "^7.3",
         "spatie/image": "^3.8",
         "spatie/laravel-sluggable": "^3.7"

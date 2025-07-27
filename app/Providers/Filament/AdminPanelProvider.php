@@ -31,6 +31,7 @@ class AdminPanelProvider extends PanelProvider
             ->id('admin')
             ->path('admin')
             ->login()
+//            ->sidebarWidth('16rem')
             ->passwordReset()
             ->unsavedChangesAlerts()
             ->profile(isSimple: false)

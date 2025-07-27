@@ -1,0 +1,43 @@
+<?php
+
+namespace App\Filament\Resources\ProductResource\Pages;
+
+use App\Filament\Resources\ProductResource;
+use Filament\Actions;
+use Filament\Forms\Components\Section;
+use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
+use Filament\Forms\Form;
+use Filament\Resources\Pages\EditRecord;
+
+class ProductImages extends EditRecord
+{
+    protected static string $resource = ProductResource::class;
+    protected static ?string $navigationLabel = 'Ürün Görselleri';
+
+    protected function getHeaderActions(): array
+    {
+        return [
+            Actions\DeleteAction::make(),
+        ];
+    }
+
+    public function form(Form $form): Form
+    {
+        return $form->schema([
+            Section::make('Görseller')
+            ->schema([
+                SpatieMediaLibraryFileUpload::make('images')
+                    ->label('Ürün Görselleri')
+                    ->image()
+                    ->multiple()
+                    ->openable()
+                    ->panelLayout('grid')
+                    ->collection('images')
+                    ->reorderable()
+                    ->appendFiles()
+                    ->preserveFilenames()
+                    ->columnSpan(2)
+            ])
+        ]);
+    }
+}

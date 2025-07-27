@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use App\Enums\InvoiceCompanyTypeEnum;
+use App\Enums\Admin\InvoiceCompanyTypeEnum;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Spatie\Sluggable\HasSlug;

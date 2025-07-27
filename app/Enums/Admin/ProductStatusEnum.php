@@ -16,4 +16,13 @@ enum ProductStatusEnum: string
           self::SOLD_OUT->value => 'Stok Yok'
         ];
     }
+
+    public static function colors(): array
+    {
+        return [
+            self::PUBLISHED->value => 'success',
+            self::DRAFT->value => 'gray',
+            self::SOLD_OUT->value => 'warning',
+        ];
+    }
 }

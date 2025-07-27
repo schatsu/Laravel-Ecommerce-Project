@@ -2,7 +2,7 @@
 
 namespace App\Filament\Resources\InvoiceRelationManagerResource\RelationManagers;
 
-use App\Enums\InvoiceCompanyTypeEnum;
+use App\Enums\Admin\InvoiceCompanyTypeEnum;
 use App\Models\City;
 use App\Models\Country;
 use App\Models\District;
@@ -11,7 +11,6 @@ use Filament\Forms\Form;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
 
 class InvoicesRelationManager extends RelationManager
 {

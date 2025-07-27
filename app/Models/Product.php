@@ -24,12 +24,11 @@ class Product extends Model implements HasMedia
         'category_id',
         'name',
         'slug',
-        'sku',
         'description',
         'short_description',
-        'base_price',
-        'compare_price',
-        'cost',
+        'selling_price',
+        'cost_price',
+        'discount_price',
         'status',
         'is_featured',
         'is_new',
@@ -42,10 +41,9 @@ class Product extends Model implements HasMedia
     protected function casts(): array
     {
         return [
-            'base_price' => 'decimal:2',
-            'compare_price' => 'decimal:2',
-            'cost' => 'decimal:2',
-            'status' => 'boolean',
+            'selling_price' => 'decimal:2',
+            'cost_price' => 'decimal:2',
+            'status' => ProductStatusEnum::class,
             'is_featured' => 'boolean',
             'is_new' => 'boolean',
             'is_best_seller' => 'boolean',
@@ -55,10 +53,12 @@ class Product extends Model implements HasMedia
 
     public function registerMediaConversions(Media $media = null): void
     {
-        $this
-            ->addMediaConversion('thumb')
-            ->fit(Fit::Crop, 720, 1005)
-            ->nonQueued();
+        $this->addMediaConversion('thumb')
+            ->width(100);
+        $this->addMediaConversion('small')
+            ->width(480);
+        $this->addMediaConversion('large')
+            ->width(1200);
     }
 
 
@@ -74,14 +74,13 @@ class Product extends Model implements HasMedia
         return $this->belongsTo(Category::class);
     }
 
-    public function variants(): HasMany
+    public function variations(): HasMany
     {
-        return $this->hasMany(ProductVariant::class);
+        return $this->hasMany(ProductVariation::class, 'product_id');
     }
-
-    public function images(): HasMany
+    public function variationTypes(): HasMany
     {
-        return $this->hasMany(ProductImage::class);
+        return $this->hasMany(VariationType::class);
     }
 
     public function scopeActive($query)
