@@ -22,6 +22,8 @@ class ProductVariations extends EditRecord
 
     protected static ?string $navigationLabel = 'Ürün Varyasyonları';
 
+    protected static ?string $navigationIcon = 'heroicon-o-queue-list';
+
     protected function getHeaderActions(): array
     {
         return [

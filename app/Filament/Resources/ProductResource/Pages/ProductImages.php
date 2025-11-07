@@ -13,6 +13,7 @@ class ProductImages extends EditRecord
 {
     protected static string $resource = ProductResource::class;
     protected static ?string $navigationLabel = 'Ürün Görselleri';
+    protected static ?string $navigationIcon = 'heroicon-o-photo';
 
     protected function getHeaderActions(): array
     {

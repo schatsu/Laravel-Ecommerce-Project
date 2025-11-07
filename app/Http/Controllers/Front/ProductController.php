@@ -16,9 +16,10 @@ class ProductController extends Controller
     public function show(string $slug): Factory|Application|View
     {
         $product = Product::query()
-            ->with(['images', 'category'])
+            ->with(['media', 'category'])
             ->where('slug', $slug)
             ->firstOrFail();
+
 
         $sizeValues = $product->productAttributeValues()
             ->whereHas('attribute', fn($q) => $q->where('type', \App\Enums\AttributeType::SIZE))

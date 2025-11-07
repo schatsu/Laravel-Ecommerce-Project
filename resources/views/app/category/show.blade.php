@@ -88,8 +88,8 @@
                                 <div class="card-product-wrapper">
                                     <a href="{{ route('product.show', $product->slug) }}" class="product-img">
                                         <img class="lazyload {{$product->gett}}"
-                                             data-src="{{ $product->getFirstMediaUrl('products', 'thumb') ?: asset('images/placeholder.png') }}"
-                                             src="{{ $product->getFirstMediaUrl('products', 'thumb') ?: asset('images/placeholder.png') }}"
+                                             data-src="{{ $product->getFirstMediaUrl('images', 'small') ?: asset('images/placeholder.png') }}"
+                                             src="{{ $product->getFirstMediaUrl('images', 'small') ?: asset('images/placeholder.png') }}"
                                              alt="{{ $product->name }}">
                                         @if($product->getMedia('products')->count() > 1)
                                             <img class="lazyload img-hover"
@@ -138,14 +138,16 @@
                                 <div class="card-product-wrapper">
                                     <a href="{{ route('product.show', $product->slug) }}" class="product-img">
                                         <img class="lazyload img-product"
-                                             data-src="{{ $product->getFirstMediaUrl('products', 'thumb') ?: asset('images/placeholder.png') }}"
-                                             src="{{ $product->getFirstMediaUrl('products', 'thumb') ?: asset('images/placeholder.png') }}"
+                                             data-src="{{ $product->getFirstMediaUrl('images', 'small') ?: asset('images/placeholder.png') }}"
+                                             src="{{ $product->getFirstMediaUrl('images', 'small') ?: asset('images/placeholder.png') }}"
                                              alt="{{ $product->name }}">
-                                        @if($product->getMedia('products')->count() > 1)
-                                            <img class="lazyload img-hover"
-                                                 data-src="{{ $product->getMedia('products')[1]->getUrl('thumb') }}"
-                                                 src="{{ $product->getMedia('products')[1]->getUrl('thumb') }}"
-                                                 alt="{{ $product->name }}">
+                                        @if($product->getMedia('images')->count() > 1)
+                                            @foreach($product->getMedia('images') as $image)
+                                                <img class="lazyload img-hover"
+                                                     data-src="{{ $image->getUrl('large') }}"
+                                                     src="{{ $image->getUrl('large') }}"
+                                                     alt="{{ $product->name }}">
+                                            @endforeach
                                         @endif
                                     </a>
                                     <div class="list-product-btn absolute-2">
@@ -172,7 +174,7 @@
                                     <a href="{{ route('product.show', $product->slug) }}"
                                        class="title link">{{ $product->name }}</a>
                                     <span
-                                        class="price current-price">{{ number_format($product->base_price, 2) }} ₺</span>
+                                        class="price current-price">{{ number_format($product->selling_price, 2) }} ₺</span>
                                 </div>
                             </div>
                         @endforeach

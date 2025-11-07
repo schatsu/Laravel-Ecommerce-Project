@@ -24,6 +24,7 @@ class CategoriesComponent extends Component
                 ->where('status', CategoryStatusEnum::ACTIVE)
                 ->where('is_featured', true)
                 ->orderBy('order')
+                ->with('media')
                 ->limit(6)
                 ->get();
         });

@@ -7,13 +7,17 @@ use App\Filament\Resources\CategoryResource\Pages;
 use App\Filament\Resources\CategoryResource\RelationManagers;
 use App\Models\Category;
 use BezhanSalleh\FilamentShield\Support\Utils;
+use Exception;
 use Filament\Forms;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Select;
+use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
+use Filament\Forms\Components\Wizard;
+use Filament\Forms\Components\Wizard\Step;
 use Filament\Forms\Form;
 use Filament\Forms\Get;
 use Filament\Forms\Set;
@@ -36,10 +40,10 @@ class CategoryResource extends Resource
 
     public static function form(Form $form): Form
     {
-        return $form
-            ->schema([
-                Forms\Components\Section::make('Genel Bilgiler')
-                    ->collapsible()
+        return $form->schema([
+            Wizard::make([
+                Step::make('Genel Bilgiler')
+                    ->icon('heroicon-o-information-circle')
                     ->schema([
                         Select::make('parent_id')
                             ->label('Üst Kategori')
@@ -49,62 +53,37 @@ class CategoryResource extends Resource
                             ->nullable()
                             ->columnSpanFull(),
 
-                        Grid::make()
-                            ->schema([
-                                TextInput::make('name')
-                                    ->label('Kategori Adı')
-                                    ->required()
-                                    ->maxLength(255)
-                                    ->live(onBlur: true)
-                                    ->afterStateUpdated(fn(Set $set, ?string $state) => $set('slug', Str::slug($state))),
+                        Grid::make()->schema([
+                            TextInput::make('name')
+                                ->label('Kategori Adı')
+                                ->required()
+                                ->maxLength(255)
+                                ->live(onBlur: true)
+                                ->afterStateUpdated(fn(Set $set, ?string $state) => $set('slug', Str::slug($state))),
 
-                                TextInput::make('slug')
-                                    ->label('Slug')
-                                    ->required()
-                                    ->unique(Category::class, 'slug', ignorable: fn($record) => $record)
-                                    ->maxLength(255),
-                            ]),
-
-                        FileUpload::make('image')
-                            ->label('Kategori Görseli')
-                            ->image()
-                            ->directory('categories')
-                            ->columnSpanFull(),
+                            TextInput::make('slug')
+                                ->label('Slug')
+                                ->required()
+                                ->unique(Category::class, 'slug', ignorable: fn($record) => $record)
+                                ->maxLength(255),
+                        ]),
 
                         Textarea::make('description')
                             ->label('Açıklama')
                             ->rows(3)
                             ->columnSpanFull(),
-                    ])
-                    ->columns(),
+                    ]),
 
-                Forms\Components\Section::make('SEO')
-                    ->collapsed()
+                Step::make('Ayarlar')
+                    ->icon('heroicon-o-cog')
                     ->schema([
-                        TextInput::make('meta_title')
-                            ->label('Meta Başlık')
-                            ->maxLength(255),
-                        TextInput::make('meta_keywords')
-                            ->label('Meta Anahtar Kelimeler')
-                            ->placeholder('örneğin: kolye, yüzük, bileklik')
-                            ->hint('Anahtar kelimeleri virgülle ayırın.')
-                            ->maxLength(255),
-                        Textarea::make('meta_description')
-                            ->label('Meta Açıklama')
-                            ->columnSpanFull(2),
-                    ])
-                    ->columns(),
-
-                Forms\Components\Section::make('Ayarlar')
-                    ->collapsed()
-                    ->schema([
-                        Grid::make(3)->schema([
+                        Grid::make(2)->schema([
                             TextInput::make('order')
                                 ->label('Sıra')
-                                ->required()
                                 ->numeric()
                                 ->default(fn() => Category::query()->max('order') + 1)
-                                ->minValue(1),
+                                ->minValue(1)
+                                ->required(),
 
                             Select::make('status')
                                 ->label('Durum')
@@ -116,54 +95,64 @@ class CategoryResource extends Resource
                         ]),
 
                         Grid::make(3)->schema([
-                            Toggle::make('is_featured')
-                                ->label('Vitrin')
-                                ->reactive(),
-
-                            Toggle::make('is_landing')
-                                ->label('Landing')
-                                ->reactive(),
-
-                            Toggle::make('is_collection')
-                                ->label('Koleksiyon')
-                                ->reactive(),
+                            Toggle::make('is_featured')->label('Vitrin')->reactive(),
+                            Toggle::make('is_landing')->label('Landing')->reactive(),
+                            Toggle::make('is_collection')->label('Koleksiyon')->reactive(),
                         ]),
 
-                        FileUpload::make('featured_cover_image')
+                        SpatieMediaLibraryFileUpload::make('featured_cover')
                             ->label('Vitrin Kapak Görseli')
-                            ->hint('Önerilen boyut: 160x160')
+                            ->collection('featured_cover')
                             ->image()
-                            ->directory('categories/featured')
+                            ->hint('Önerilen boyut: 160x160')
                             ->hidden(fn(Get $get) => !$get('is_featured')),
 
-                        FileUpload::make('landing_cover_image')
+                        SpatieMediaLibraryFileUpload::make('landing_cover')
                             ->label('Landing Kapak Görseli')
-                            ->hint('Önerilen boyut: 360x432')
+                            ->collection('landing_cover')
                             ->image()
-                            ->directory('categories/landing')
+                            ->hint('Önerilen boyut: 360x432')
                             ->hidden(fn(Get $get) => !$get('is_landing')),
 
-                        FileUpload::make('collection_cover_image')
+                        SpatieMediaLibraryFileUpload::make('collection_cover')
                             ->label('Koleksiyon Kapak Görseli')
-                            ->hint('Önerilen boyut: 800x746')
+                            ->collection('collection_cover')
                             ->image()
-                            ->directory('categories/collection')
+                            ->hint('Önerilen boyut: 800x746')
                             ->hidden(fn(Get $get) => !$get('is_collection')),
+                    ]),
 
-                    ])
-            ]);
+                Step::make('SEO')
+                    ->icon('heroicon-o-globe-alt')
+                    ->schema([
+                        TextInput::make('meta_title')
+                            ->label('Meta Başlık')
+                            ->maxLength(255),
+
+                        TextInput::make('meta_keywords')
+                            ->label('Meta Anahtar Kelimeler')
+                            ->placeholder('örneğin: kolye, yüzük, bileklik')
+                            ->hint('Anahtar kelimeleri virgülle ayırın.')
+                            ->maxLength(255),
+
+                        Textarea::make('meta_description')
+                            ->label('Meta Açıklama')
+                            ->rows(3)
+                            ->columnSpanFull(),
+                    ]),
+            ])
+                ->skippable()
+                ->columnSpanFull(),
+        ]);
     }
 
-
+    /**
+     * @throws Exception
+     */
     public static function table(Table $table): Table
     {
         return $table
             ->columns([
-                ImageColumn::make('image')
-                    ->label('Görsel')
-                    ->square()
-                    ->size(50),
-
                 TextColumn::make('name')
                     ->label('Kategori Adı')
                     ->searchable()
@@ -209,6 +198,7 @@ class CategoryResource extends Resource
                     ->label('Vitrin')
                     ->sortable()
                     ->badge()
+                    ->toggleable(isToggledHiddenByDefault: true)
                     ->state(function ($record) {
                         if ($record->is_featured === null) {
                             return 'Belirsiz';
@@ -228,14 +218,16 @@ class CategoryResource extends Resource
                     ->sortable()
                     ->badge()
                     ->state(fn($record) => $record->is_landing ? 'Aktif' : 'Pasif')
-                    ->color(fn($state) => $state === 'Aktif' ? 'success' : 'danger'),
+                    ->color(fn($state) => $state === 'Aktif' ? 'success' : 'danger')
+                    ->toggleable(isToggledHiddenByDefault: true),
 
                 TextColumn::make('is_collection')
                     ->label('Koleksiyon')
                     ->sortable()
                     ->badge()
                     ->state(fn($record) => $record->is_collection ? 'Aktif' : 'Pasif')
-                    ->color(fn($state) => $state === 'Aktif' ? 'success' : 'danger'),
+                    ->color(fn($state) => $state === 'Aktif' ? 'success' : 'danger')
+                    ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->reorderable('order')
             ->defaultSort('order')

@@ -17,6 +17,7 @@ class ProductVariationTypes extends EditRecord
 {
     protected static string $resource = ProductResource::class;
     protected static ?string $navigationLabel = 'Ürün Özellikleri';
+    protected static ?string $navigationIcon = 'heroicon-o-cog-6-tooth';
 
     protected function getHeaderActions(): array
     {

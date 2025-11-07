@@ -18,9 +18,14 @@ return new class extends Migration
             $table->string('name');
             $table->string('slug')->unique();
             $table->text('description')->nullable();
-            $table->string('image')->nullable();
+            $table->boolean('is_featured')->default(false);
+            $table->boolean('is_landing')->default(false);
+            $table->boolean('is_collection')->default(false);
             $table->string('status')->default(CategoryStatusEnum::ACTIVE)->nullable();
             $table->integer('order')->default(1);
+            $table->string('meta_title')->nullable();
+            $table->text('meta_description')->nullable();
+            $table->string('meta_keywords')->nullable();
             $table->timestamps();
         });
     }

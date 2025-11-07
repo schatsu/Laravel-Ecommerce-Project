@@ -157,39 +157,38 @@ class ProductResource extends Resource
                 TextColumn::make('slug')
                     ->label('Slug')
                     ->copyable()
-                    ->toggleable(),
+                    ->toggleable(isToggledHiddenByDefault: true),
 
                 TextColumn::make('cost_price')
                     ->label('Maliyet')
                     ->money('TRY')
                     ->sortable()
-                    ->toggleable(),
+                    ->toggleable(isToggledHiddenByDefault: true),
 
                 TextColumn::make('selling_price')
                     ->label('Satış Fiyatı')
                     ->money('TRY')
                     ->sortable(),
 
-
                 TextColumn::make('is_featured')
                     ->label('Öne Çıkan')
                     ->badge()
                     ->sortable()
-                    ->toggleable()
+                    ->toggleable(isToggledHiddenByDefault: true)
                     ->formatStateUsing(fn($state) => $state ? 'Evet' : 'Hayır'),
 
                 TextColumn::make('is_new')
                     ->label('Yeni Ürün')
                     ->badge()
                     ->sortable()
-                    ->toggleable()
+                    ->toggleable(isToggledHiddenByDefault: true)
                     ->formatStateUsing(fn($state) => $state ? 'Evet' : 'Hayır'),
 
                 TextColumn::make('is_best_seller')
                     ->label('Çok Satan')
                     ->badge()
                     ->sortable()
-                    ->toggleable()
+                    ->toggleable(isToggledHiddenByDefault: true)
                     ->formatStateUsing(fn($state) => $state ? 'Evet' : 'Hayır'),
 
                 TextColumn::make('status')
@@ -200,9 +199,9 @@ class ProductResource extends Resource
 
                 TextColumn::make('created_at')
                     ->label('Oluşturulma')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(),
+                    ->dateTime('d.m.Y')
+                    ->toggleable(isToggledHiddenByDefault: true)
+                    ->sortable(),
             ])
             ->filters([
                 SelectFilter::make('status')

@@ -20,10 +20,10 @@ class LandingCategoriesComponent extends Component
     {
         $this->categories = Cache::remember('landing_categories', 3600, function () {
            return Category::query()
-                ->select('id', 'name', 'slug','landing_cover_image','collection_cover_image')
                 ->where('status', CategoryStatusEnum::ACTIVE)
                 ->where('is_landing', true)
                 ->orderBy('order')
+               ->with('media')
                 ->get();
         });
     }

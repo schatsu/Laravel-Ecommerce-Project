@@ -15,22 +15,27 @@ class CategoryController extends Controller
 {
     public function index()
     {
+        $categories = Category::query()
+            ->where('status', CategoryStatusEnum::ACTIVE)
+            ->where('parent_id', null)
+            ->orderBy('order')
+            ->paginate(12);
 
+        return view('app.category.index', compact('categories'));
     }
 
-    public function show(string $slug): Factory|Application|View
+    public function show(string $slug): View
     {
         /** @var Category $category */
         $category = Category::query()
             ->where('slug', $slug)
-            ->where('status', CategoryStatusEnum::ACTIVE)
+            ->where('status', \App\Enums\Admin\CategoryStatusEnum::ACTIVE)
             ->firstOrFail();
 
         $products = $category->products()
-            ->where('status', true)
+            ->where('status', \App\Enums\Admin\ProductStatusEnum::PUBLISHED)
             ->with([
                 'media',
-                'variants.attributeValues'
             ])
             ->latest()
             ->paginate(12);

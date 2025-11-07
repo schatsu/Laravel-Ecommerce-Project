@@ -11,7 +11,7 @@
                             <div class="collection-item style-2 hover-img">
                                 <div class="collection-inner">
                                     <a href="{{route('category.show', ['slug' => $category?->slug])}}" class="collection-image img-style">
-                                        <img class="lazyload" data-src="{{asset('storage/'. $category?->landing_cover_image)}}" src="{{asset('storage/'. $category?->landing_cover_image)}}" alt="collection-img">
+                                        <img class="lazyload" data-src="{{ $category?->getFirstMediaUrl('landing_cover', 'landing_cover') }}" src="{{ $category?->getFirstMediaUrl('landing_cover', 'landing_cover') }}" alt="collection-img">
                                     </a>
                                     <div class="collection-content">
                                         <a href="{{route('category.show', ['slug' => $category?->slug])}}" class="tf-btn collection-title hover-icon fs-15 rounded-full"><span>{{$category?->name}}</span><i class="icon icon-arrow1-top-left"></i></a>
@@ -39,7 +39,7 @@
                         <div class="collection-item-v4 hover-img">
                             <div class="collection-inner">
                                 <a href="{{route('category.show', ['slug' => $category?->slug])}}" class="collection-image img-style radius-10">
-                                    <img class="lazyload" data-src="{{asset('storage/'.$category?->collection_cover_image)}}" src="{{asset('storage/'.$category?->collection_cover_image)}}" alt="collection-img">
+                                    <img class="lazyload" data-src="{{ $category?->getFirstMediaUrl('collection_cover', 'collection_cover') }}" src="{{ $category?->getFirstMediaUrl('collection_cover', 'collection_cover') }}" alt="collection-img">
                                 </a>
                                 <div class="collection-content wow fadeInUp" data-wow-delay="0s">
                                     <h5 class="heading text_white">{{$category?->name}}</h5>

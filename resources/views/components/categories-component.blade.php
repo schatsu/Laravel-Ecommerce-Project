@@ -6,7 +6,7 @@
                     @forelse($categories as $category)
                         <div class="collection-item-circle hover-img">
                             <a href="{{route('category.show', ['slug' => $category?->slug])}}" class="collection-image img-style">
-                                <img class="lazyload border border-3 rounded-circle" data-src="{{ asset($category?->image_url) }}" src="{{ asset( $category?->image_url) }}" alt="c{{$category?->name}}">
+                                <img class="lazyload border border-3 rounded-circle" data-src="{{ $category?->getFirstMediaUrl('featured_cover', 'featured_cover') }}" src="{{ $category?->getFirstMediaUrl('featured_cover', 'featured_cover') }}" alt="{{$category?->name}}">
                             </a>
                             <div class="collection-content text-center">
                                 <a href="{{route('category.show', ['slug' => $category?->slug])}}" class="link title fw-6">{{$category?->name}}</a>
