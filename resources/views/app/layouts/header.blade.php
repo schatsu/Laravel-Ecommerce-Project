@@ -86,12 +86,12 @@
                                         <div class="row-demo">
                                             @forelse($category->products as $product)
                                                 <div class="demo-item">
-                                                    <a href="#">
+                                                    <a href="{{route('product.show', ['slug' => $product?->slug])}}">
                                                         <div class="demo-image position-relative">
                                                             <img class="lazyload"
                                                                  width="300" height="329"
-                                                                 data-src="{{asset('storage/'. $product?->images?->first()?->image_path ?? '')}}"
-                                                                 src="{{asset('storage/'. $product?->images?->first()?->image_path ?? '')}}"
+                                                                 data-src="{{$product->getFirstMediaUrl('images', 'small') ?: asset('images/placeholder.png')}}"
+                                                                 src="{{$product->getFirstMediaUrl('images', 'small') ?: asset('images/placeholder.png')}}"
                                                                  alt="{{$product?->name}}">
                                                         </div>
                                                         <span title="{{$product?->name}}" class="demo-name">{{Str::limit($product?->name, 34)}}</span>

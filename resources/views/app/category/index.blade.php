@@ -10,7 +10,7 @@
                         <div class="blog-article-item">
                             <div class="article-thumb">
                                 <a href="{{route('category.show', ['slug' => $category?->slug])}}">
-                                    <img class="lazyload" data-src="{{ $category?->getFirstMediaUrl('collection_cover', 'collection_cover') }}" src="{{ $category?->getFirstMediaUrl('collection_cover', 'collection_cover') }}"
+                                    <img class="lazyload" data-src="{{ $category?->getFirstMediaUrl('collection_cover', 'collection_cover') ?: 'https://placehold.co/800x746' }}" src="{{ $category?->getFirstMediaUrl('collection_cover', 'collection_cover') ?: 'https://placehold.co/800x746' }}"
                                          alt="img-blog">
                                 </a>
                                 <div class="article-label">
@@ -20,7 +20,7 @@
                             </div>
                             <div class="article-content">
                                 <div class="article-title">
-                                    <a href="{{route('category.show', ['slug' => $category?->slug])}}" class="">The next generation of leather alternatives</a>
+                                    <a href="{{route('category.show', ['slug' => $category?->slug])}}" class="">{{$category?->description ?? ''}}</a>
                                 </div>
                                 <div class="article-btn">
                                     <a href="{{route('category.show', ['slug' => $category?->slug])}}" class="tf-btn btn-line fw-6">Alışverişe Başla<i

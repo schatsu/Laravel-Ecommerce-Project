@@ -16,17 +16,13 @@ class ProductController extends Controller
     public function show(string $slug): Factory|Application|View
     {
         $product = Product::query()
-            ->with(['media', 'category'])
+            ->with(['media', 'category', 'variations', 'variationTypes' => function ($query) {
+                $query->with('options');
+            }])
             ->where('slug', $slug)
             ->firstOrFail();
 
-
-        $sizeValues = $product->productAttributeValues()
-            ->whereHas('attribute', fn($q) => $q->where('type', \App\Enums\AttributeType::SIZE))
-            ->with('attributeValue', 'attribute')
-            ->get();
-
-        return view('app.product.show', compact('product', 'sizeValues'));
+        return view('app.product.show', compact('product'));
     }
 
     public function quickView(string $hashId): ProductQuickViewResource

@@ -45,12 +45,12 @@
                                      data-direction="vertical">
                                     <div class="swiper-wrapper stagger-wrap">
                                         <!-- beige -->
-                                        @foreach($product?->images as $image)
+                                        @foreach($product->getMedia('images') as $image)
                                             <div class="swiper-slide stagger-item" data-color="beige">
                                                 <div class="item">
                                                     <img class="lazyload"
-                                                         data-src="{{asset('storage/'. $image?->image_path)}}"
-                                                         src="{{asset('storage/'. $image?->image_path)}}" alt="">
+                                                         data-src="{{ $image->getUrl('large') }}"
+                                                         src="{{ $image->getUrl('large') }}" alt="{{$product?->name}}">
                                                 </div>
                                             </div>
                                         @endforeach
@@ -59,14 +59,14 @@
                                 <div dir="ltr" class="swiper tf-product-media-main" id="gallery-swiper-started">
                                     <div class="swiper-wrapper">
                                         <!-- beige -->
-                                        @foreach($product?->images as $image)
+                                        @foreach($product->getMedia('images') as $image)
                                             <div class="swiper-slide" data-color="beige">
-                                                <a href="{{asset('storage/'. $image?->image_path)}}" target="_blank"
+                                                <a href="{{ $image->getUrl('large') }}" target="_blank"
                                                    class="item" data-pswp-width="770px" data-pswp-height="1075px">
                                                     <img class="tf-image-zoom lazyload"
-                                                         data-zoom="{{asset('storage/'. $image?->image_path)}}"
-                                                         data-src="{{asset('storage/'. $image?->image_path)}}"
-                                                         src="{{asset('storage/'. $image?->image_path)}}" alt="">
+                                                         data-zoom="{{ $image->getUrl('large') }}"
+                                                         data-src="{{ $image->getUrl('large') }}"
+                                                         src="{{ $image->getUrl('large') }}" alt="{{$product?->name}}">
                                                 </a>
                                             </div>
                                         @endforeach
@@ -87,16 +87,16 @@
                                 <div class="tf-product-info-price">
                                     <div class="price-on-sale text_black">{{number_format($product?->price, 2)}} ₺</div>
                                 </div>
-                                {{--                                <div class="tf-product-info-liveview">--}}
-                                {{--                                    <div class="liveview-count">20</div>--}}
-                                {{--                                    <p class="fw-6">People are viewing this right now</p>--}}
-                                {{--                                </div>--}}
+                                {{--  <div class="tf-product-info-liveview">--}}
+                                {{--      <div class="liveview-count">20</div>--}}
+                                {{--      <p class="fw-6">People are viewing this right now</p>--}}
+                                {{--  </div>--}}
                                 <div class="tf-product-info-variant-picker">
                                     <div class="variant-picker-item">
                                         <div class="d-flex justify-content-between align-items-center">
                                             <div class="variant-picker-label">
                                                 Ölçü: <span class="fw-6 variant-picker-label-value">
-                                                    {{ $sizeValues->first()?->attributeValue->value ?? '' }}
+{{--                                                    {{ $sizeValues->first()?->attributeValue->value ?? '' }}--}}
                                                      </span>
                                             </div>
 
@@ -104,17 +104,20 @@
                                                 bulun</a>
                                         </div>
                                         <div class="variant-picker-values">
-                                            @foreach($sizeValues as $value)
-                                                <input type="radio"
-                                                       name="size1"
-                                                       id="size-{{ $value->id }}"
-                                                       value="{{ $value->attributeValue->value }}"
-                                                       @if($loop->first) checked @endif>
-
-                                                <label class="style-text size-btn" for="size-{{ $value->id }}"
-                                                       data-value="{{ $value->attributeValue->value }}">
-                                                    <p>{{ $value->attributeValue->value }}</p>
-                                                </label>
+                                            @foreach($product?->variationTypes as $variationType)
+                                               @if($variationType->type == \App\Enums\ProductVariationType::RADIO)
+                                                   @foreach($variationType->options as $option)
+                                                        <input type="radio"
+                                                               name="size1"
+                                                               id="size-{{ $option->id }}"
+                                                               value="{{ $option->name }}"
+                                                               @if($loop->first) checked @endif>
+                                                        <label class="style-text size-btn" for="size-{{ $option->id }}"
+                                                               data-value="{{ $option->name }}">
+                                                            <p>{{ $option->name }}</p>
+                                                        </label>
+                                                   @endforeach
+                                               @endif
                                             @endforeach
                                         </div>
                                     </div>

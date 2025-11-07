@@ -19,8 +19,8 @@ class HeaderCategoriesComposer
                 ->orderBy('order')
                 ->limit(10)
                 ->with(['products' => function ($query) {
-                    $query->where('status', true);
-                    $query->with('images');
+                    $query->where('status', ProductStatusEnum::PUBLISHED);
+                    $query->with('media');
                 }])
                 ->get();
         });

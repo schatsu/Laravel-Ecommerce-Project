@@ -6,7 +6,7 @@
                 @foreach ($sliders as $slider)
                     <div class="swiper-slide" lazy="true">
                         <div class="wrap-slider">
-                            <img class="lazyload" data-src="{{asset('storage/'. $slider?->image)}}" src="{{asset('storage/'. $slider?->image)}}" alt="{{$slider?->title ?? ''}}" >
+                            <img class="lazyload" data-src="{{asset('storage/'. $slider?->image) ?: 'https://placehold.co/2000x732'}}" src="{{asset('storage/'. $slider?->image) ?: 'https://placehold.co/2000x732'}}" alt="{{$slider?->title ?? ''}}" >
                             <div class="box-content">
                                 <div class="container">
                                     <h1 class="fade-item fade-item-1">{{$slider?->title}}</h1>
