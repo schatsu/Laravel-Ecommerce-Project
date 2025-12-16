@@ -3,6 +3,8 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Support\Collection;
 
 class ProductVariation extends Model
 {
@@ -27,5 +29,15 @@ class ProductVariation extends Model
             'cost_price' => 'decimal:2',
             'discount_price' => 'decimal:2',
         ];
+    }
+
+    public function scopeActive($query)
+    {
+        return $query->where('is_active', true);
+    }
+
+    public function selectedOptions()
+    {
+        return VariationTypeOption::whereIn('id', $this->variation_type_option_ids ?? [])->get();
     }
 }

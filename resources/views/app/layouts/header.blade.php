@@ -27,39 +27,37 @@
                                         class="icon icon-account"></i></a></li>
                         @endguest
                         @auth
-                            <li class="nav-account dropdown" id="accountDropdownWrapper">
-                                <a href="#" class="nav-icon-item dropdown-toggle" id="accountDropdown" role="button"
-                                   data-bs-toggle="dropdown" aria-expanded="false">
+                            <li class="nav-account position-relative" id="accountDropdownWrapper">
+                                <a href="#" class="nav-icon-item" id="accountDropdown">
                                     <i class="icon icon-account"></i>
                                 </a>
-                                <ul class="dropdown-menu dropdown-menu-end mt-2" aria-labelledby="accountDropdown">
-                                    <li>
-                                        <a class="dropdown-item" href="{{route('account.index')}}">
-                                            <i class="icon icon-user me-1"></i> Hesabım
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a class="dropdown-item" href="">
-                                            <i class="icon icon-car-order me-1"></i> Siparişlerim
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a class="dropdown-item" href="">
-                                            <i class="icon icon-heart me-1"></i> İstek Listem
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <hr class="dropdown-divider">
-                                    </li>
-                                    <li>
-                                        <form method="POST" action="{{route('logout')}}">
-                                            @csrf
-                                            <button type="submit" class="dropdown-item">
-                                                <i class="icon icon-logout me-1"></i> Çıkış Yap
-                                            </button>
-                                        </form>
-                                    </li>
-                                </ul>
+                                <div class="account-dropdown-menu">
+                                    <div class="dropdown-header">
+                                        <span class="user-greeting">Merhaba,</span>
+                                        <span class="user-name">{{ auth()->user()->name ?? 'Kullanıcı' }}</span>
+                                    </div>
+                                    <div class="dropdown-divider"></div>
+                                    <a class="dropdown-item" href="{{route('account.index')}}">
+                                        <i class="icon icon-account"></i>
+                                        <span>Hesabım</span>
+                                    </a>
+                                    <a class="dropdown-item" href="">
+                                        <i class="icon icon-car-order"></i>
+                                        <span>Siparişlerim</span>
+                                    </a>
+                                    <a class="dropdown-item" href="">
+                                        <i class="icon icon-heart"></i>
+                                        <span>İstek Listem</span>
+                                    </a>
+                                    <div class="dropdown-divider"></div>
+                                    <form method="POST" action="{{route('logout')}}">
+                                        @csrf
+                                        <button type="submit" class="dropdown-item logout-btn">
+                                            <i class="icon icon-logout"></i>
+                                            <span>Çıkış Yap</span>
+                                        </button>
+                                    </form>
+                                </div>
                             </li>
 
                         @endauth

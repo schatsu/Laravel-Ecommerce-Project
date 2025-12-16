@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Front\CartController;
 use App\Http\Controllers\Front\CategoryController;
 use App\Http\Controllers\Front\CustomerInvoicesController;
 use App\Http\Controllers\Front\ForgetPasswordController;
@@ -28,8 +29,10 @@ Route::middleware(['auth'])->group(function () {
         Route::get('adres', [CustomerInvoicesController::class, 'index'])->name('address');
         Route::post('adres', [CustomerInvoicesController::class, 'store'])->name('address.store');
         Route::put('adres/{slug}', [CustomerInvoicesController::class, 'update'])->name('address.update');
+        Route::patch('adres/{slug}/default', [CustomerInvoicesController::class, 'setDefault'])->name('address.setDefault');
         Route::delete('adres/{slug}', [CustomerInvoicesController::class, 'destroy'])->name('address.destroy');
         Route::get('hesap-detaylari', [UserProfileController::class, 'accountDetails'])->name('account.details');
+        Route::put('hesap-detaylari', [UserProfileController::class, 'updateAccountDetails'])->name('details.update');
         Route::get('cities/{countrySlug}', [UserProfileController::class, 'cities'])->name('cities');
         Route::get('districts/{citySlug}', [UserProfileController::class, 'districts'])->name('districts');
     });
@@ -42,3 +45,12 @@ Route::get('kategori/{slug}', [CategoryController::class, 'show'])->name('catego
 Route::get('urun/{slug}', [ProductController::class, 'show'])->name('product.show');
 Route::get('/quick-view/{product}', [ProductController::class, 'quickView'])->name('product.quick-view');
 
+// Sepet Routes (RESTful)
+Route::prefix('sepet')->as('cart.')->group(function () {
+    Route::get('/', [CartController::class, 'index'])->name('index');
+    Route::get('/mini', [CartController::class, 'show'])->name('show');
+    Route::post('/', [CartController::class, 'store'])->name('store');
+    Route::patch('/items/{item}', [CartController::class, 'update'])->name('update');
+    Route::delete('/items/{item}', [CartController::class, 'destroy'])->name('destroy');
+    Route::delete('/', [CartController::class, 'destroyAll'])->name('destroyAll');
+});

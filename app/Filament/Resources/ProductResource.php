@@ -43,7 +43,7 @@ class ProductResource extends Resource
     protected static ?string $label = 'Ürün';
 
     protected static ?string $slug = 'products';
-    protected static SubNavigationPosition $subNavigationPosition = SubNavigationPosition::End;
+    protected static SubNavigationPosition $subNavigationPosition = SubNavigationPosition::Top;
 
     public static function form(Form $form): Form
     {

@@ -5,37 +5,68 @@ namespace App\Http\Controllers\Front;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ProductQuickViewResource;
 use App\Models\Product;
-use Illuminate\Contracts\View\Factory;
-use Illuminate\Contracts\View\View;
-use Illuminate\Foundation\Application;
-use Illuminate\Http\JsonResponse;
+use App\Services\ProductViewService;
 use Illuminate\Http\Request;
 
 class ProductController extends Controller
 {
-    public function show(string $slug): Factory|Application|View
+    public function __construct(
+        private readonly ProductViewService $productViewService
+    ) {}
+
+    public function show(Request $request, string $slug)
     {
         $product = Product::query()
-            ->with(['media', 'category', 'variations', 'variationTypes' => function ($query) {
-                $query->with('options');
-            }])
+            ->active()
             ->where('slug', $slug)
-            ->firstOrFail();
-
-        return view('app.product.show', compact('product'));
-    }
-
-    public function quickView(string $hashId): ProductQuickViewResource
-    {
-        $product = Product::query()
             ->with([
                 'media',
-                'variants.attributeVariants.attribute',
-                'variants.attributeVariants.value',
+                'category',
+                'variationTypes.options.media',
+                'variations' => fn($query) => $query->active()
             ])
-            ->findByHashidOrFail($hashId);
+            ->firstOrFail();
+
+        $selectedOptionIds = array_map('intval', (array) $request->input('options', []));
+        sort($selectedOptionIds);
+
+        $selectedVariation = $this->productViewService->findSelectedVariation($product, $selectedOptionIds);
+
+        if (!$selectedVariation) {
+            $selectedVariation = $product->variations->first();
+            $selectedOptionIds = $this->productViewService->getDefaultOptionIds($selectedVariation);
+        }
+
+        $pricing = $this->productViewService->calculatePricingAndStock($product, $selectedVariation);
+
+        $galleryImages = $this->productViewService->getGalleryImages($product, $selectedOptionIds);
+
+        $availableOptionsByType = $this->productViewService->calculateAvailableOptionsByType($product, $selectedOptionIds);
+
+        return view('app.product.show', [
+            'product' => $product,
+            'selectedVariation' => $selectedVariation,
+            'selectedOptionIds' => $selectedOptionIds,
+            'currentSellingPrice' => $pricing['currentSellingPrice'],
+            'currentDiscountPrice' => $pricing['currentDiscountPrice'],
+            'currentStock' => $pricing['currentStock'],
+            'hasStock' => $pricing['hasStock'],
+            'galleryImages' => $galleryImages,
+            'availableOptionsByType' => $availableOptionsByType,
+        ]);
+    }
+
+    public function quickView(string $slug): ProductQuickViewResource
+    {
+        $product = Product::query()
+            ->where('slug', $slug)
+            ->with([
+                'media',
+                'variations',
+                'variationTypes.options',
+            ])
+            ->firstOrFail();
 
         return ProductQuickViewResource::make($product);
     }
-
 }

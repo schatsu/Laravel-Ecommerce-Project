@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Front;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Front\UpdateAccountDetailsRequest;
 use App\Http\Resources\CityResource;
 use App\Http\Resources\DistrictResource;
 use App\Models\City;
@@ -13,7 +14,6 @@ use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
 use Illuminate\Foundation\Application;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
 class UserProfileController extends Controller
@@ -50,5 +50,21 @@ class UserProfileController extends Controller
         $user = auth()->user();
 
         return view('app.account.account-detail', compact('user'));
+    }
+
+    public function updateAccountDetails(UpdateAccountDetailsRequest $request): RedirectResponse
+    {
+        /** @var User $user */
+        $user = auth()->user();
+
+        $attributes = collect($request->validated())->except(['current_password', 'password', 'password_confirmation']);
+
+        if ($request->filled('password')) {
+            $attributes->put('password', bcrypt($request->password));
+        }
+
+        $user->update($attributes->toArray());
+
+        return redirect()->back()->with('toast_success', 'Hesap bilgileriniz başarıyla güncellendi.');
     }
 }

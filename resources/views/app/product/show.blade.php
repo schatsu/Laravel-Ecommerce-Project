@@ -1,39 +1,57 @@
-@php use App\Enums\AttributeType; @endphp
 @extends('app.layouts.main')
-@section('title', $product?->name  ?? '')
+@section('title', $product->name)
+
 @push('css')
-    <link rel="stylesheet" href="{{asset('front/css/drift-basic.min.css')}}">
-    <link rel="stylesheet" href="{{asset('front/css/photoswipe.css')}}">
+    <link rel="stylesheet" href="{{ asset('front/css/drift-basic.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('front/css/photoswipe.css') }}">
+    <style>
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideOut {
+            from {
+                transform: translateX(0);
+                opacity: 1;
+            }
+            to {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+        }
+
+        .toast-content {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+    </style>
 @endpush
+
 @section('content')
-    <!-- breadcrumb -->
     <div class="tf-breadcrumb">
         <div class="container">
             <div class="tf-breadcrumb-wrap d-flex justify-content-between flex-wrap align-items-center">
                 <div class="tf-breadcrumb-list">
-                    <a href="{{route('home')}}" class="text">Ana Sayfa</a>
+                    <a href="{{ route('home') }}" class="text">Ana Sayfa</a>
                     <i class="icon icon-arrow-right"></i>
-                    <a href="{{route('category.show', ['slug' => $product?->category?->slug])}}"
-                       class="text">{{$product?->category?->name ?? ''}}</a>
+                    <a href="{{ route('category.show', ['slug' => $product->category->slug]) }}" class="text">
+                        {{ $product->category->name }}
+                    </a>
                     <i class="icon icon-arrow-right"></i>
-                    <span class="text">{{$product?->name}}</span>
-                </div>
-                <div class="tf-breadcrumb-prev-next">
-                    <a href="#" class="tf-breadcrumb-prev hover-tooltip center">
-                        <i class="icon icon-arrow-left"></i>
-                    </a>
-                    <a href="#" class="tf-breadcrumb-back hover-tooltip center">
-                        <i class="icon icon-shop"></i>
-                    </a>
-                    <a href="#" class="tf-breadcrumb-next hover-tooltip center">
-                        <i class="icon icon-arrow-right"></i>
-                    </a>
+                    <span class="text">{{ $product->name }}</span>
                 </div>
             </div>
         </div>
     </div>
-    <!-- /breadcrumb -->
-    <!-- default -->
+
     <section class="flat-spacing-4 pt_0">
         <div class="tf-main-product section-image-zoom">
             <div class="container">
@@ -41,39 +59,45 @@
                     <div class="col-md-6">
                         <div class="tf-product-media-wrap sticky-top">
                             <div class="thumbs-slider">
+
+
                                 <div dir="ltr" class="swiper tf-product-media-thumbs other-image-zoom"
                                      data-direction="vertical">
                                     <div class="swiper-wrapper stagger-wrap">
-                                        <!-- beige -->
-                                        @foreach($product->getMedia('images') as $image)
-                                            <div class="swiper-slide stagger-item" data-color="beige">
+                                        @foreach($galleryImages as $media)
+                                            <div class="swiper-slide stagger-item">
                                                 <div class="item">
-                                                    <img class="lazyload"
-                                                         data-src="{{ $image->getUrl('large') }}"
-                                                         src="{{ $image->getUrl('large') }}" alt="{{$product?->name}}">
+                                                    <img class="lazyload product-media-thumb"
+                                                         data-src="{{ $media->getUrl('thumb') }}"
+                                                         src="{{ $media->getUrl('thumb') }}"
+                                                         alt="{{ $product->name }}">
                                                 </div>
                                             </div>
                                         @endforeach
                                     </div>
                                 </div>
+
+
                                 <div dir="ltr" class="swiper tf-product-media-main" id="gallery-swiper-started">
-                                    <div class="swiper-wrapper">
-                                        <!-- beige -->
-                                        @foreach($product->getMedia('images') as $image)
-                                            <div class="swiper-slide" data-color="beige">
-                                                <a href="{{ $image->getUrl('large') }}" target="_blank"
-                                                   class="item" data-pswp-width="770px" data-pswp-height="1075px">
-                                                    <img class="tf-image-zoom lazyload"
-                                                         data-zoom="{{ $image->getUrl('large') }}"
-                                                         data-src="{{ $image->getUrl('large') }}"
-                                                         src="{{ $image->getUrl('large') }}" alt="{{$product?->name}}">
+                                    <div class="swiper-wrapper main-media-wrapper">
+                                        @foreach($galleryImages as $media)
+                                            <div class="swiper-slide">
+                                                <a href="{{ $media->getUrl() }}" target="_blank" class="item"
+                                                   data-pswp-width="770px" data-pswp-height="1075px">
+                                                    <img class="tf-image-zoom lazyload main-media-img"
+                                                         data-zoom="{{ $media->getUrl() }}"
+                                                         data-src="{{ $media->getUrl() }}"
+                                                         src="{{ $media->getUrl() }}"
+                                                         alt="{{ $product->name }}">
                                                 </a>
                                             </div>
                                         @endforeach
                                     </div>
+
                                     <div class="swiper-button-next button-style-arrow thumbs-next"></div>
                                     <div class="swiper-button-prev button-style-arrow thumbs-prev"></div>
                                 </div>
+
                             </div>
                         </div>
                     </div>
@@ -81,187 +105,339 @@
                         <div class="tf-product-info-wrap position-relative">
                             <div class="tf-zoom-main"></div>
                             <div class="tf-product-info-list other-image-zoom">
+
                                 <div class="tf-product-info-title">
-                                    <h5>{{$product?->name}}</h5>
+                                    <h5>{{ $product->name }}</h5>
+                                </div>
+                                <div class="tf-product-info-badges">
+                                    @if($product->is_new)
+                                        <div class="badge bg-success-subtle text-success">Yeni</div>
+                                    @endif
+                                    @if($product->is_best_seller)
+                                        <div class="badge bg-warning-subtle text-warning">Çok Satan</div>
+                                    @endif
+                                    @if($product->is_featured)
+                                        <div class="badge bg-primary-subtle text-primary">Öne Çıkan</div>
+                                    @endif
+
+                                    @if(!$hasStock)
+                                        <div class="badge bg-danger-subtle text-danger">Stok Tükendi</div>
+                                    @endif
                                 </div>
                                 <div class="tf-product-info-price">
-                                    <div class="price-on-sale text_black">{{number_format($product?->price, 2)}} ₺</div>
-                                </div>
-                                {{--  <div class="tf-product-info-liveview">--}}
-                                {{--      <div class="liveview-count">20</div>--}}
-                                {{--      <p class="fw-6">People are viewing this right now</p>--}}
-                                {{--  </div>--}}
-                                <div class="tf-product-info-variant-picker">
-                                    <div class="variant-picker-item">
-                                        <div class="d-flex justify-content-between align-items-center">
-                                            <div class="variant-picker-label">
-                                                Ölçü: <span class="fw-6 variant-picker-label-value">
-{{--                                                    {{ $sizeValues->first()?->attributeValue->value ?? '' }}--}}
-                                                     </span>
+                                    <div class="price">
+                                        @if($currentDiscountPrice && $currentDiscountPrice < $currentSellingPrice)
+                                            <div
+                                                class="price-on-sale">{{ number_format($currentDiscountPrice, 2, ',', '.') }} ₺
                                             </div>
+                                            <div
+                                                class="compare-at-price">{{ number_format($currentSellingPrice, 2, ',', '.') }} ₺
+                                            </div>
+                                            <div class="badge text-bg-danger">
+                                                -{{ round((($currentSellingPrice - $currentDiscountPrice) / $currentSellingPrice) * 100) }} %
+                                            </div>
+                                        @else
+                                            <div
+                                                class="price-on-sale">{{ number_format($currentSellingPrice, 2, ',', '.') }}
+                                                ₺
+                                            </div>
+                                        @endif
+                                    </div>
 
-                                            <a href="#find_size" data-bs-toggle="modal" class="find-size fw-6">Bedeninizi
-                                                bulun</a>
-                                        </div>
-                                        <div class="variant-picker-values">
-                                            @foreach($product?->variationTypes as $variationType)
-                                               @if($variationType->type == \App\Enums\ProductVariationType::RADIO)
-                                                   @foreach($variationType->options as $option)
-                                                        <input type="radio"
-                                                               name="size1"
-                                                               id="size-{{ $option->id }}"
-                                                               value="{{ $option->name }}"
-                                                               @if($loop->first) checked @endif>
-                                                        <label class="style-text size-btn" for="size-{{ $option->id }}"
-                                                               data-value="{{ $option->name }}">
-                                                            <p>{{ $option->name }}</p>
-                                                        </label>
-                                                   @endforeach
-                                               @endif
-                                            @endforeach
-                                        </div>
+                                    <div class="fs-12 text-muted mt-2">
+                                        @if($selectedVariation)
+                                            SKU: <strong>{{ $selectedVariation->sku }}</strong>
+                                        @endif
                                     </div>
                                 </div>
-                                <div class="tf-product-info-quantity">
+
+
+                                @if($product->short_description)
+                                    <div class="tf-product-info-description">
+                                        <p>{{ $product->short_description }}</p>
+                                    </div>
+                                @endif
+
+
+                                @if($product->variationTypes->isNotEmpty())
+                                    <div class="tf-product-info-variant-picker">
+                                        @foreach($product->variationTypes as $variationType)
+                                            <div class="variant-picker-item mb-3">
+                                                <div class="variant-picker-label mb-2">
+                                                    {{ $variationType->name }}:
+                                                    <span class="fw-6 variant-picker-label-value text-primary">
+                                                        {{ $variationType->options->whereIn('id', $selectedOptionIds)->first()?->name }}
+                                                    </span>
+                                                </div>
+
+                                                <div class="variant-picker-values">
+                                                    @foreach($variationType->options as $option)
+                                                        @php
+                                                            $isAvailable = in_array($option->id, $availableOptionsByType[$variationType->id] ?? []);
+                                                        @endphp
+
+
+                                                        <input type="radio"
+                                                               name="group_{{ $variationType->id }}"
+                                                               id="option-{{ $option->id }}"
+                                                               value="{{ $option->id }}"
+                                                               class="variation-option-input d-none"
+                                                            @checked(in_array($option->id, $selectedOptionIds))
+                                                            @disabled(!$isAvailable)>
+
+
+                                                        @if($variationType->type->value === 'image')
+                                                            <label
+                                                                @class(['style-image', 'hover-tooltip', 'variation-label', 'active' => in_array($option->id, $selectedOptionIds), 'disabled' => !$isAvailable])
+                                                                for="option-{{ $option->id }}"
+                                                                @if(!$isAvailable) style="opacity: 0.4; pointer-events: none; cursor: not-allowed;" @endif>
+                                                                <div class="image">
+                                                                    <img class="lazyloaded"
+                                                                         src="{{ $option->getFirstMediaUrl('images', 'thumb') ?: asset('front/images/default.jpg') }}"
+                                                                         alt="{{ $option->name }}">
+                                                                </div>
+                                                                <span
+                                                                    class="tooltip">{{ $option->name }}@if(!$isAvailable)
+                                                                        (Mevcut Değil)
+                                                                    @endif</span>
+                                                            </label>
+
+                                                        @elseif($variationType->type->value === 'color' || $variationType->type->value === 'select')
+                                                            <label
+                                                                @class(['style-color', 'hover-tooltip', 'variation-label', 'active' => in_array($option->id, $selectedOptionIds), 'disabled' => !$isAvailable])
+                                                                for="option-{{ $option->id }}"
+                                                                @if(!$isAvailable) style="opacity: 0.4; pointer-events: none; cursor: not-allowed;" @endif>
+                                                                <span class="btn-checkbox"
+                                                                      style="background-color: {{ $option->color_code ?? '#cccccc' }}"></span>
+                                                                <span
+                                                                    class="tooltip">{{ $option->name }}@if(!$isAvailable)
+                                                                        (Mevcut Değil)
+                                                                    @endif</span>
+                                                            </label>
+
+                                                        @else
+                                                            <label
+                                                                @class(['style-text', 'variation-label', 'active' => in_array($option->id, $selectedOptionIds), 'disabled' => !$isAvailable])
+                                                                for="option-{{ $option->id }}"
+                                                                @if(!$isAvailable) style="opacity: 0.4; pointer-events: none; cursor: not-allowed;" @endif>
+                                                                <p>{{ $option->name }}@if(!$isAvailable)
+                                                                        (Mevcut Değil)
+                                                                    @endif</p>
+                                                            </label>
+                                                        @endif
+
+                                                    @endforeach
+                                                </div>
+                                            </div>
+                                        @endforeach
+                                    </div>
+                                @endif
+
+
+                                <div class="tf-product-info-quantity mt-4">
                                     <div class="quantity-title fw-6">Miktar</div>
                                     <div class="wg-quantity">
-                                        <span class="btn-quantity btn-decrease">-</span>
-                                        <input type="text" class="quantity-product" name="number" value="1">
-                                        <span class="btn-quantity btn-increase">+</span>
+                                        <span class="btn-quantity minus-qty">-</span>
+                                        <input type="number" class="quantity-product" id="product-quantity"
+                                               name="quantity" value="1" min="1" max="{{ $currentStock }}">
+                                        <span class="btn-quantity plus-qty">+</span>
                                     </div>
                                 </div>
+
                                 <div class="tf-product-info-buy-button">
-                                    <form class="">
-                                        <a href="javascript:void(0);"
-                                           class="tf-btn btn-fill justify-content-center fw-6 fs-16 flex-grow-1 animate-hover-btn btn-add-to-cart"><span>Sepete ekle -&nbsp;</span><span
-                                                class="tf-qty-price total-price">$18.00</span></a>
-                                        <a href="javascript:void(0);"
-                                           class="tf-product-btn-wishlist hover-tooltip box-icon bg_white wishlist btn-icon-action">
-                                            <span class="icon icon-heart"></span>
-                                            <span class="tooltip">Add to Wishlist</span>
-                                            <span class="icon icon-delete"></span>
-                                        </a>
-                                    </form>
+                                    <button type="button"
+                                            class="tf-btn btn-fill justify-content-center fw-6 fs-16 flex-grow-1"
+                                            id="add-to-cart-btn"
+                                            data-product-id="{{ $product->id }}"
+                                            data-variation-id="{{ $selectedVariation?->id }}"
+                                        @disabled(!$hasStock)>
+                                        @if($hasStock)
+                                            <span class="btn-text">Sepete Ekle - {{ number_format($currentDiscountPrice ?: $currentSellingPrice, 2, ',', '.') }} ₺</span>
+                                            <span class="btn-loading d-none">
+                                                <i class="icon icon-loading"></i> Ekleniyor...
+                                            </span>
+                                        @else
+                                            <span>Stok Tükendi</span>
+                                        @endif
+                                    </button>
                                 </div>
+
                                 <div class="tf-product-info-extra-link">
-                                    <a href="#ask_question" data-bs-toggle="modal" class="tf-product-extra-icon">
-                                        <div class="icon">
-                                            <i class="icon-question"></i>
-                                        </div>
-                                        <div class="text fw-6">Ask a question</div>
-                                    </a>
                                     <a href="#delivery_return" data-bs-toggle="modal" class="tf-product-extra-icon">
-                                        <div class="icon">
-                                            <svg class="d-inline-block" xmlns="http://www.w3.org/2000/svg" width="22"
-                                                 height="18" viewBox="0 0 22 18" fill="currentColor">
-                                                <path
-                                                    d="M21.7872 10.4724C21.7872 9.73685 21.5432 9.00864 21.1002 8.4217L18.7221 5.27043C18.2421 4.63481 17.4804 4.25532 16.684 4.25532H14.9787V2.54885C14.9787 1.14111 13.8334 0 12.4255 0H9.95745V1.69779H12.4255C12.8948 1.69779 13.2766 2.07962 13.2766 2.54885V14.5957H8.15145C7.80021 13.6052 6.85421 12.8936 5.74468 12.8936C4.63515 12.8936 3.68915 13.6052 3.33792 14.5957H2.55319C2.08396 14.5957 1.70213 14.2139 1.70213 13.7447V2.54885C1.70213 2.07962 2.08396 1.69779 2.55319 1.69779H9.95745V0H2.55319C1.14528 0 0 1.14111 0 2.54885V13.7447C0 15.1526 1.14528 16.2979 2.55319 16.2979H3.33792C3.68915 17.2884 4.63515 18 5.74468 18C6.85421 18 7.80021 17.2884 8.15145 16.2979H13.423C13.7742 17.2884 14.7202 18 15.8297 18C16.9393 18 17.8853 17.2884 18.2365 16.2979H21.7872V10.4724ZM16.684 5.95745C16.9494 5.95745 17.2034 6.08396 17.3634 6.29574L19.5166 9.14894H14.9787V5.95745H16.684ZM5.74468 16.2979C5.27545 16.2979 4.89362 15.916 4.89362 15.4468C4.89362 14.9776 5.27545 14.5957 5.74468 14.5957C6.21392 14.5957 6.59575 14.9776 6.59575 15.4468C6.59575 15.916 6.21392 16.2979 5.74468 16.2979ZM15.8298 16.2979C15.3606 16.2979 14.9787 15.916 14.9787 15.4468C14.9787 14.9776 15.3606 14.5957 15.8298 14.5957C16.299 14.5957 16.6809 14.9776 16.6809 15.4468C16.6809 15.916 16.299 16.2979 15.8298 16.2979ZM18.2366 14.5957C17.8853 13.6052 16.9393 12.8936 15.8298 12.8936C15.5398 12.8935 15.252 12.943 14.9787 13.04V10.8511H20.0851V14.5957H18.2366Z"></path>
-                                            </svg>
-                                        </div>
-                                        <div class="text fw-6">Delivery & Return</div>
-                                    </a>
-                                    <a href="#share_social" data-bs-toggle="modal" class="tf-product-extra-icon">
-                                        <div class="icon">
-                                            <i class="icon-share"></i>
-                                        </div>
-                                        <div class="text fw-6">Share</div>
+                                        <div class="icon"><i class="icon-delivery-time"></i></div>
+                                        <div class="text fw-6">Teslimat & İade</div>
                                     </a>
                                 </div>
-                                <div class="tf-product-info-delivery-return">
-                                    <div class="row">
-                                        <div class="col-xl-6 col-12">
-                                            <div class="tf-product-delivery">
-                                                <div class="icon">
-                                                    <i class="icon-delivery-time"></i>
-                                                </div>
-                                                <p>Estimate delivery times: <span class="fw-7">12-26 days</span>
-                                                    (International), <span class="fw-7">3-6 days</span> (United States).
-                                                </p>
-                                            </div>
-                                        </div>
-                                        <div class="col-xl-6 col-12">
-                                            <div class="tf-product-delivery mb-0">
-                                                <div class="icon">
-                                                    <i class="icon-return-order"></i>
-                                                </div>
-                                                <p>Return within <span class="fw-7">30 days</span> of purchase. Duties &
-                                                    taxes are non-refundable.</p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
+
                                 <div class="tf-product-info-trust-seal">
                                     <div class="tf-product-trust-mess">
                                         <i class="icon-safe"></i>
-                                        <p class="fw-6">Guarantee Safe <br> Checkout</p>
+                                        <p class="fw-6">Güvenli <br> Ödeme</p>
                                     </div>
                                     <div class="tf-payment">
-                                        <img src="images/payments/visa.png" alt="">
-                                        <img src="images/payments/img-1.png" alt="">
-                                        <img src="images/payments/img-2.png" alt="">
-                                        <img src="images/payments/img-3.png" alt="">
-                                        <img src="images/payments/img-4.png" alt="">
+                                        <img src="{{ asset('front/images/payments/visa.png') }}" alt="Visa">
+                                        <img src="{{ asset('front/images/payments/img-1.png') }}" alt="Mastercard">
                                     </div>
                                 </div>
+
                             </div>
                         </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="tf-sticky-btn-atc">
-            <div class="container">
-                <div class="tf-height-observer w-100 d-flex align-items-center">
-                    <div class="tf-sticky-atc-product d-flex align-items-center">
-                        <div class="tf-sticky-atc-img">
-                            <img class="lazyloaded" data-src="images/shop/products/p-d1.png" alt=""
-                                 src="images/shop/products/p-d1.png">
-                        </div>
-                        <div class="tf-sticky-atc-title fw-5 d-xl-block d-none">{{$product?->name}}</div>
-                    </div>
-                    <div class="tf-sticky-atc-infos">
-                        <form class="">
-                            <div class="tf-sticky-atc-variant-price text-center">
-                                <select class="tf-select">
-                                    <option selected="selected">Beige / S - $8.00</option>
-                                    <option>Beige / M - $8.00</option>
-                                    <option>Beige / L - $8.00</option>
-                                    <option>Beige / XL - $8.00</option>
-                                    <option>Black / S - $8.00</option>
-                                    <option>Black / M - $8.00</option>
-                                    <option>Black / L - $8.00</option>
-                                    <option>Black / XL - $8.00</option>
-                                    <option>Blue / S - $8.00</option>
-                                    <option>Blue / M - $8.00</option>
-                                    <option>Blue / L - $8.00</option>
-                                    <option>Blue / XL - $8.00</option>
-                                    <option>White / S - $8.00</option>
-                                    <option>White / M - $8.00</option>
-                                    <option>White / L - $8.00</option>
-                                    <option>White / XL - $8.00</option>
-                                </select>
-                            </div>
-                            <div class="tf-sticky-atc-btns">
-                                <div class="tf-product-info-quantity">
-                                    <div class="wg-quantity">
-                                        <span class="btn-quantity minus-btn">-</span>
-                                        <input type="text" name="number" value="1">
-                                        <span class="btn-quantity plus-btn">+</span>
-                                    </div>
-                                </div>
-                                <a href="javascript:void(0);"
-                                   class="tf-btn btn-fill radius-3 justify-content-center fw-6 fs-14 flex-grow-1 animate-hover-btn btn-add-to-cart"><span>Add to cart</a>
-                            </div>
-                        </form>
                     </div>
                 </div>
             </div>
         </div>
     </section>
-    <!-- /default -->
 @endsection
+
 @push('scripts')
-    <script type="module" src="{{asset('front/js/model-viewer.min.js')}}"></script>
-    <script type="module" src="{{asset('front/js/zoom.js')}}"></script>
-    <script type="module" src="{{asset('front/js/drift.min.js')}}"></script>
+    <script type="module" src="{{ asset('front/js/model-viewer.min.js') }}"></script>
+    <script type="module" src="{{ asset('front/js/zoom.js') }}"></script>
+    <script type="module" src="{{ asset('front/js/drift.min.js') }}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios@1.13.2/dist/axios.min.js"></script>
+
+    <script>
+        $(document).ready(() => {
+            axios.defaults.headers.common['X-CSRF-TOKEN'] =
+                $('meta[name="csrf-token"]').attr('content');
+
+            axios.defaults.headers.common['Accept'] = 'application/json';
+
+
+            const $quantityInput = $('#product-quantity');
+            const maxStock = parseInt($quantityInput.attr('max'), 10) || 99;
+            const unitPrice = {{ $currentDiscountPrice ?: $currentSellingPrice }};
+
+            const updateButtonPrice = () => {
+                const quantity = parseInt($quantityInput.val(), 10) || 1;
+                const totalPrice = (unitPrice * quantity).toLocaleString('tr-TR', {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2
+                });
+                $('#add-to-cart-btn .btn-text').text(`Sepete Ekle - ${totalPrice} ₺`);
+            };
+
+            const updateCartCount = (count) => {
+                $('.cart-count, .toolbar-count, .count-box').text(count);
+            };
+
+            const showToast = (message, type = 'success') => {
+                const bgColor = type === 'success' ? '#28a745' : '#dc3545';
+                const iconClass = type === 'success' ? 'icon-check' : 'icon-close';
+
+                const $toast = $(`
+            <div class="toast-notification toast-${type}">
+                <div class="toast-content">
+                    <i class="icon ${iconClass}"></i>
+                    <span>${message}</span>
+                </div>
+            </div>
+        `);
+
+                $toast.css({
+                    position: 'fixed',
+                    top: '20px',
+                    right: '20px',
+                    background: bgColor,
+                    color: 'white',
+                    padding: '15px 25px',
+                    borderRadius: '8px',
+                    zIndex: 9999,
+                    animation: 'slideIn 0.3s ease',
+                    boxShadow: '0 4px 12px rgba(0,0,0,0.15)'
+                });
+
+                $('body').append($toast);
+
+                setTimeout(() => {
+                    $toast.css('animation', 'slideOut 0.3s ease');
+                    setTimeout(() => $toast.remove(), 300);
+                }, 3000);
+            };
+
+            const handleAddToCart = async () => {
+                const $btn = $('#add-to-cart-btn');
+                const $btnText = $btn.find('.btn-text');
+                const $btnLoading = $btn.find('.btn-loading');
+
+                const productId = $btn.data('product-id');
+                const variationId = $btn.data('variation-id') || null;
+                const quantity = parseInt($quantityInput.val(), 10) || 1;
+
+                $btnText.addClass('d-none');
+                $btnLoading.removeClass('d-none');
+                $btn.prop('disabled', true);
+
+                try {
+                    const {data} = await axios.post('{{ route("cart.store") }}', {
+                        product_id: productId,
+                        variation_id: variationId,
+                        quantity
+                    });
+
+                    if (!data.success) {
+                        showToast(data.message || 'Bir hata oluştu', 'error');
+                        return;
+                    }
+
+                    showToast('Ürün sepete eklendi!', 'success');
+
+                    updateCartCount(data.cart_count);
+
+                    if (window.refreshMiniCart) {
+                        window.refreshMiniCart();
+                    }
+
+                    $('#shoppingCart').modal('show');
+
+                } catch (error) {
+                    console.error('Add to cart error:', error);
+                    const message = error.response?.data?.message || 'Bir hata oluştu';
+                    showToast(message, 'error');
+                } finally {
+                    $btnText.removeClass('d-none');
+                    $btnLoading.addClass('d-none');
+                    $btn.prop('disabled', false);
+                }
+            };
+
+            $('.variation-option-input').on('change', () => {
+                $('body').css('cursor', 'wait');
+                $('.tf-product-info-variant-picker').css('opacity', '0.6');
+
+                const params = new URLSearchParams();
+
+                $('.variation-option-input:checked').each(function () {
+                    params.append('options[]', $(this).val());
+                });
+
+                window.location.search = params.toString();
+            });
+
+            $('.minus-qty').on('click', () => {
+                const currentVal = parseInt($quantityInput.val(), 10) || 1;
+                if (currentVal > 1) {
+                    $quantityInput.val(currentVal - 1);
+                    updateButtonPrice();
+                }
+            });
+
+            $('.plus-qty').on('click', () => {
+                const currentVal = parseInt($quantityInput.val(), 10) || 1;
+                if (currentVal < maxStock) {
+                    $quantityInput.val(currentVal + 1);
+                    updateButtonPrice();
+                }
+            });
+
+            $quantityInput.on('input change', () => {
+                updateButtonPrice();
+            });
+
+            $('#add-to-cart-btn').on('click', handleAddToCart);
+
+            window.showToast = showToast;
+            window.updateCartCount = updateCartCount;
+        });
+    </script>
+
 @endpush

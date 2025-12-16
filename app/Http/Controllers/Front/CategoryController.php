@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Front;
 use App\Enums\Admin\CategoryStatusEnum;
 use App\Enums\Admin\ProductStatusEnum;
 use App\Http\Controllers\Controller;
+use App\ModelFilters\ProductFilter;
 use App\Models\Category;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
@@ -24,21 +25,24 @@ class CategoryController extends Controller
         return view('app.category.index', compact('categories'));
     }
 
-    public function show(string $slug): View
+    public function show(Request $request, string $slug): View
     {
         /** @var Category $category */
         $category = Category::query()
             ->where('slug', $slug)
-            ->where('status', \App\Enums\Admin\CategoryStatusEnum::ACTIVE)
+            ->where('status', CategoryStatusEnum::ACTIVE)
+            ->with('children')
             ->firstOrFail();
 
         $products = $category->products()
-            ->where('status', \App\Enums\Admin\ProductStatusEnum::PUBLISHED)
+            ->where('status', ProductStatusEnum::PUBLISHED)
             ->with([
                 'media',
+                'variations',
             ])
-            ->latest()
-            ->paginate(12);
+            ->filter($request->all(), ProductFilter::class)
+            ->paginate(12)
+            ->withQueryString();
 
         return view('app.category.show', compact('category', 'products'));
     }

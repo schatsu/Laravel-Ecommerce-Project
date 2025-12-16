@@ -63,7 +63,6 @@ class CategorySeeder extends Seeder
                 'name' => $data['name'],
                 'slug' => Str::slug($data['name']),
                 'description' => $data['description'],
-                'image' => 'https://placehold.co/320x320',
                 'status' => $data['status'],
                 'parent_id' => null,
                 'order' => $data['order'],
