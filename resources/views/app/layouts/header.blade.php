@@ -1,4 +1,4 @@
-@php use Illuminate\Support\Str; @endphp
+@php use App\Models\Product;use Illuminate\Support\Str; @endphp
 <header id="header" class="header-default header-style-2">
     <div class="main-header line">
         <div class="container-full px_15 lg-px_40">
@@ -45,7 +45,7 @@
                                         <i class="icon icon-car-order"></i>
                                         <span>Siparişlerim</span>
                                     </a>
-                                    <a class="dropdown-item" href="">
+                                    <a class="dropdown-item" href="{{route('account.favorite.index')}}">
                                         <i class="icon icon-heart"></i>
                                         <span>İstek Listem</span>
                                     </a>
@@ -61,8 +61,10 @@
                             </li>
 
                         @endauth
-                        <li class="nav-wishlist"><a href="wishlist.html" class="nav-icon-item"><i
-                                    class="icon icon-heart"></i><span class="count-box">0</span></a></li>
+                        <li class="nav-wishlist"><a href="{{route('account.favorite.index')}}" class="nav-icon-item"><i
+                                    class="icon icon-heart"></i><span
+                                    class="count-box favorites-count">{{ auth()->check() ? auth()->user()->favorites(App\Models\Product::class)->count() : 0 }}</span></a>
+                        </li>
                         <li class="nav-cart"><a href="#shoppingCart" data-bs-toggle="modal" class="nav-icon-item"><i
                                     class="icon icon-bag"></i><span class="count-box">0</span></a></li>
                     </ul>
@@ -92,7 +94,8 @@
                                                                  src="{{$product->getFirstMediaUrl('images', 'small') ?: asset('images/placeholder.png')}}"
                                                                  alt="{{$product?->name}}">
                                                         </div>
-                                                        <span title="{{$product?->name}}" class="demo-name">{{Str::limit($product?->name, 34)}}</span>
+                                                        <span title="{{$product?->name}}"
+                                                              class="demo-name">{{Str::limit($product?->name, 34)}}</span>
                                                     </a>
                                                 </div>
                                             @empty

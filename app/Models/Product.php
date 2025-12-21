@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Multicaret\Acquaintances\Traits\CanBeFavorited;
 use Mtvs\EloquentHashids\HasHashid;
 use Spatie\Image\Enums\Fit;
 use Spatie\MediaLibrary\HasMedia;
@@ -20,7 +21,7 @@ use Spatie\Sluggable\SlugOptions;
 
 class Product extends Model implements HasMedia
 {
-    use SoftDeletes, InteractsWithMedia, HasSlug, HasHashid, Filterable;
+    use SoftDeletes, InteractsWithMedia, HasSlug, HasHashid, Filterable, CanBeFavorited;
 
     protected $fillable = [
         'category_id',

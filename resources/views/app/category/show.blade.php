@@ -1,5 +1,20 @@
 @extends('app.layouts.main')
 @section('title', $category?->name)
+@push('css')
+    <style>
+        .wishlist-toggle.favorited .icon-heart {
+            color: #e74c3c !important;
+        }
+        .wishlist-toggle.favorited .icon-heart::before {
+            content: "\e92f";
+            font-family: 'icomoon', sans-serif !important;
+        }
+        .wishlist-toggle.loading {
+            pointer-events: none;
+            opacity: 0.6;
+        }
+    </style>
+@endpush
 @section('content')
     <!-- page-title -->
     <div class="tf-page-title">
@@ -136,9 +151,11 @@
                                            class="box-icon quick-add style-3 hover-tooltip">
                                             <span class="icon icon-bag"></span><span class="tooltip">Hızlı Ekle</span>
                                         </a>
-                                        <a href="#" class="box-icon wishlist style-3 hover-tooltip">
+                                        <a href="javascript:void(0);"
+                                           data-slug="{{ $product->slug }}"
+                                           class="box-icon wishlist-toggle style-3 hover-tooltip {{ auth()->check() && auth()->user()->hasFavorited($product) ? 'favorited' : '' }}">
                                             <span class="icon icon-heart"></span> <span
-                                                class="tooltip">Favorilere Ekle</span>
+                                                class="tooltip">{{ auth()->check() && auth()->user()->hasFavorited($product) ? 'Favorilerden Çıkar' : 'Favorilere Ekle' }}</span>
                                         </a>
                                         <a href="javascript:void(0);"
                                            data-id="{{ $product->slug }}"
@@ -180,10 +197,10 @@
                                             <span class="icon icon-bag"></span><span class="tooltip">Hızlı Ekle</span>
                                         </a>
                                         <a href="javascript:void(0);"
-                                           class="box-icon bg_white wishlist btn-icon-action">
+                                           data-slug="{{ $product->slug }}"
+                                           class="box-icon bg_white wishlist-toggle {{ auth()->check() && auth()->user()->hasFavorited($product) ? 'favorited' : '' }}">
                                             <span class="icon icon-heart"></span><span
-                                                class="tooltip">Favorilere Ekle</span><span
-                                                class="icon icon-delete"></span>
+                                                class="tooltip">{{ auth()->check() && auth()->user()->hasFavorited($product) ? 'Favorilerden Çıkar' : 'Favorilere Ekle' }}</span>
                                         </a>
                                         <a href="javascript:void(0);"
                                            data-id="{{ $product->slug }}"
@@ -925,6 +942,57 @@
                         $btn.html(originalText);
                     });
             });
+
+            $(document).on('click', '.wishlist-toggle', function (e) {
+                e.preventDefault();
+
+                let $btn = $(this);
+                let slug = $btn.data('slug');
+
+                if (!slug || $btn.hasClass('loading')) return;
+
+                $btn.addClass('loading');
+
+                axios.post('{{ route("account.favorite.toggle", ":slug") }}'.replace(':slug', slug))
+                    .then(response => {
+                        if (!response.data.success) return;
+
+                        $('.favorites-count').text(response.data.data.favorites_count);
+
+                        let isFavorited = response.data.data.is_favorited;
+                        let $tooltip = $btn.find('.tooltip');
+
+                        $btn.toggleClass('favorited', isFavorited);
+
+                        if ($tooltip.length) {
+                            $tooltip.text(isFavorited ? 'Favorilerden Çıkar' : 'Favorilere Ekle');
+                        }
+
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Başarılı!',
+                            text: response.data.message,
+                            timer: 2000,
+                            showConfirmButton: false
+                        });
+                    })
+                    .catch(error => {
+                        if (error.response?.status === 401) {
+                            window.location.href = '{{ route("login") }}';
+                            return;
+                        }
+
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Hata!',
+                            text: error.response?.data?.message || 'Bir hata oluştu.'
+                        });
+                    })
+                    .finally(() => {
+                        $btn.removeClass('loading');
+                    });
+            });
+
         });
     </script>
 @endpush

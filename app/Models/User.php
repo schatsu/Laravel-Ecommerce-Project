@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Multicaret\Acquaintances\Traits\CanFavorite;
 use Spatie\Permission\Traits\HasRoles;
 use Spatie\Sluggable\HasSlug;
 use Spatie\Sluggable\SlugOptions;
@@ -18,7 +19,7 @@ use Spatie\Sluggable\SlugOptions;
 class User extends Authenticatable implements FilamentUser, MustVerifyEmail
 {
     /** @use HasFactory<UserFactory> */
-    use HasFactory, Notifiable, HasRoles, HasSlug;
+    use HasFactory, Notifiable, HasRoles, HasSlug, CanFavorite;
 
     public function canAccessPanel(Panel $panel): bool
     {

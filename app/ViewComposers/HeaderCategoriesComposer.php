@@ -5,6 +5,7 @@ namespace App\ViewComposers;
 use App\Enums\Admin\CategoryStatusEnum;
 use App\Enums\Admin\ProductStatusEnum;
 use App\Models\Category;
+use App\Models\Product;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\View\View;
 

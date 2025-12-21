@@ -15,6 +15,7 @@
         "laravel/telescope": "^5.10",
         "laravel/tinker": "^2.10.1",
         "mtvs/eloquent-hashids": "^3.6",
+        "multicaret/laravel-acquaintances": "^3.7",
         "predis/predis": "^3.1",
         "realrashid/sweet-alert": "^7.3",
         "spatie/image": "^3.8",

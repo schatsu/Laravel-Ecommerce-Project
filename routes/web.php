@@ -3,6 +3,7 @@
 use App\Http\Controllers\Front\CartController;
 use App\Http\Controllers\Front\CategoryController;
 use App\Http\Controllers\Front\CustomerInvoicesController;
+use App\Http\Controllers\Front\FavoriteController;
 use App\Http\Controllers\Front\ForgetPasswordController;
 use App\Http\Controllers\Front\HomeController;
 use App\Http\Controllers\Front\LoginController;
@@ -26,15 +27,17 @@ Route::prefix('auth')->middleware('guest')->group(function () {
 Route::middleware(['auth'])->group(function () {
     Route::prefix('profil')->as('account.')->group(function () {
         Route::get('hesabim', [UserProfileController::class, 'account'])->name('index');
-        Route::get('adres', [CustomerInvoicesController::class, 'index'])->name('address');
+        Route::get('adreslerim', [CustomerInvoicesController::class, 'index'])->name('address');
         Route::post('adres', [CustomerInvoicesController::class, 'store'])->name('address.store');
         Route::put('adres/{slug}', [CustomerInvoicesController::class, 'update'])->name('address.update');
         Route::patch('adres/{slug}/default', [CustomerInvoicesController::class, 'setDefault'])->name('address.setDefault');
         Route::delete('adres/{slug}', [CustomerInvoicesController::class, 'destroy'])->name('address.destroy');
-        Route::get('hesap-detaylari', [UserProfileController::class, 'accountDetails'])->name('account.details');
+        Route::get('hesap-detaylarim', [UserProfileController::class, 'accountDetails'])->name('account.details');
         Route::put('hesap-detaylari', [UserProfileController::class, 'updateAccountDetails'])->name('details.update');
         Route::get('cities/{countrySlug}', [UserProfileController::class, 'cities'])->name('cities');
         Route::get('districts/{citySlug}', [UserProfileController::class, 'districts'])->name('districts');
+        Route::get('/favoriler', [FavoriteController::class, 'index'])->name('favorite.index');
+        Route::post('/toggle/{slug}', [FavoriteController::class, 'toggle'])->name('favorite.toggle');
     });
     Route::post('cikis', [LoginController::class, 'logout'])->name('logout');
 });
