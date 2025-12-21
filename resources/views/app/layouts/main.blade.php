@@ -23,6 +23,29 @@
     <link rel="shortcut icon" href="{{asset('front/images/logo/favicon.png')}}">
     <link rel="apple-touch-icon-precomposed" href="{{asset('front/images/logo/favicon.png')}}">
 
+    <style>
+        .favorites-count {
+            position: absolute !important;
+            line-height: 18px !important;
+            height: 18px !important;
+            min-width: 18px !important;
+            text-align: center !important;
+            padding: 0 3px; !important;
+            font-size: 10px !important;
+            font-weight: 500 !important;
+            border-radius: 9999px !important;
+            white-space: nowrap !important;
+            text-overflow: ellipsis !important;
+            display: block !important;
+            overflow: hidden !important;
+            z-index: 2 !important;
+            top: -8px !important;
+            right: -10px !important;
+            color: var(--white) !important;
+            background-color: var(--primary) !important;
+        }
+    </style>
+
 </head>
 
 <body class="preload-wrapper">

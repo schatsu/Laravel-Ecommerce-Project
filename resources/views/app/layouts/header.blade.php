@@ -63,7 +63,7 @@
                         @endauth
                         <li class="nav-wishlist"><a href="{{route('account.favorite.index')}}" class="nav-icon-item"><i
                                     class="icon icon-heart"></i><span
-                                    class="count-box favorites-count">{{ auth()->check() ? auth()->user()->favorites(App\Models\Product::class)->count() : 0 }}</span></a>
+                                    class="favorites-count">{{ auth()->check() ? auth()->user()->favorites(App\Models\Product::class)->count() : 0 }}</span></a>
                         </li>
                         <li class="nav-cart"><a href="#shoppingCart" data-bs-toggle="modal" class="nav-icon-item"><i
                                     class="icon icon-bag"></i><span class="count-box">0</span></a></li>
