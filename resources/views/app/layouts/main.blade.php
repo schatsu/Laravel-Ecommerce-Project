@@ -6,8 +6,9 @@
     <meta charset="utf-8">
     <title>Ata Silver | @yield('title')</title>
 
-    <meta name="author" content="themesflat.com">
+    <meta name="author" content="tufiworks.com">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="robots" content="noindex, nofollow">
 
     <!-- font -->
     <link rel="stylesheet" href="{{asset('front/fonts/fonts.css')}}">
