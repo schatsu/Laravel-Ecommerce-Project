@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Enums\Admin\OrderPaymentStatusEnum;
+use App\Enums\Admin\OrderStatusEnum;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -30,6 +32,8 @@ class Order extends Model
         'subtotal' => 'decimal:2',
         'shipping_cost' => 'decimal:2',
         'total' => 'decimal:2',
+        'status' => OrderStatusEnum::class,
+        'payment_status' => OrderPaymentStatusEnum::class,
     ];
 
     public function user(): BelongsTo
@@ -47,7 +51,7 @@ class Order extends Model
         $prefix = 'ORD';
         $date = now()->format('Ymd');
         $random = strtoupper(substr(uniqid(), -4));
-        
+
         return "{$prefix}{$date}{$random}";
     }
 }

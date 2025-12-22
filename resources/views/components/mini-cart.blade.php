@@ -59,7 +59,7 @@
                                     <a href="{{ route('cart.index') }}"
                                        class="tf-btn btn-outline radius-3 link w-100 justify-content-center">Sepeti
                                         Görüntüle</a>
-                                    <a href="#"
+                                    <a href="{{route('checkout.index')}}"
                                        class="tf-btn btn-fill animate-hover-btn radius-3 w-100 justify-content-center"><span>Ödemeye Geç</span></a>
                                 </div>
                             </div>

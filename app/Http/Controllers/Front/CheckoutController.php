@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Front;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Front\CheckoutProcessRequest;
 use App\Models\Country;
 use App\Models\Order;
 use App\Services\CartService;
@@ -46,11 +47,8 @@ class CheckoutController extends Controller
         return view('app.checkout.index', compact('cart', 'addresses', 'defaultAddress', 'countries'));
     }
 
-    public function process(Request $request)
+    public function process(CheckoutProcessRequest $request)
     {
-        $request->validate([
-            'address_id' => 'required|exists:invoices,id',
-        ]);
 
         $cart = $this->cartService->getCart();
         $cart->load('items.product', 'items.variation');
@@ -62,14 +60,9 @@ class CheckoutController extends Controller
         $user = auth()->user();
         $address = $user->invoices()->findOrFail($request->address_id);
 
-        // Ad ve soyadı ayır (iyzico için zorunlu)
-        $nameParts = explode(' ', trim($address->name), 2);
-        $firstName = $nameParts[0] ?? 'Ad';
-        $lastName = $nameParts[1] ?? $nameParts[0]; // Soyad yoksa adı kullan
-
         $billingAddress = [
-            'first_name' => $firstName,
-            'last_name' => $lastName,
+            'first_name' => $address->name,
+            'last_name' => $address->surname ?? $address->name,
             'phone' => $address->phone,
             'address' => $address->address,
             'city' => $address->city?->name ?? 'Istanbul',

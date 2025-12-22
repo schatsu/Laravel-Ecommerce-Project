@@ -8,6 +8,7 @@ use App\Http\Controllers\Front\FavoriteController;
 use App\Http\Controllers\Front\ForgetPasswordController;
 use App\Http\Controllers\Front\HomeController;
 use App\Http\Controllers\Front\LoginController;
+use App\Http\Controllers\Front\OrderController;
 use App\Http\Controllers\Front\ProductController;
 use App\Http\Controllers\Front\RegisterController;
 use App\Http\Controllers\Front\ResetPasswordController;
@@ -39,8 +40,10 @@ Route::middleware(['auth'])->group(function () {
         Route::get('districts/{citySlug}', [UserProfileController::class, 'districts'])->name('districts');
         Route::get('/favoriler', [FavoriteController::class, 'index'])->name('favorite.index');
         Route::post('/toggle/{slug}', [FavoriteController::class, 'toggle'])->name('favorite.toggle');
+        Route::get('/siparislerim', [OrderController::class, 'index'])->name('orders.index');
+        Route::get('/siparislerim/{order}', [OrderController::class, 'show'])->name('orders.show');
     });
-    
+
     // Checkout Routes
     Route::prefix('odeme')->as('checkout.')->group(function () {
         Route::get('/', [CheckoutController::class, 'index'])->name('index');
@@ -48,11 +51,10 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/basarili/{order}', [CheckoutController::class, 'success'])->name('success');
         Route::get('/basarisiz', [CheckoutController::class, 'fail'])->name('fail');
     });
-    
+
     Route::post('cikis', [LoginController::class, 'logout'])->name('logout');
 });
 
-// iyzico callback (CSRF exempted via VerifyCsrfToken middleware)
 Route::post('/odeme/callback', [CheckoutController::class, 'callback'])->name('checkout.callback');
 
 Route::get('/', HomeController::class)->name('home');
@@ -61,7 +63,6 @@ Route::get('kategori/{slug}', [CategoryController::class, 'show'])->name('catego
 Route::get('urun/{slug}', [ProductController::class, 'show'])->name('product.show');
 Route::get('/quick-view/{product}', [ProductController::class, 'quickView'])->name('product.quick-view');
 
-// Sepet Routes (RESTful)
 Route::prefix('sepet')->as('cart.')->group(function () {
     Route::get('/', [CartController::class, 'index'])->name('index');
     Route::get('/mini', [CartController::class, 'show'])->name('show');

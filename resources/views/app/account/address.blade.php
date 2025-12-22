@@ -1,5 +1,45 @@
 @extends('app.layouts.main')
 @section('title', 'Adreslerim')
+
+@push('css')
+<style>
+    /* Düzenleme formu açıkken kart genişliğini artır */
+    .account-address-item:has(.edit-form-address:not(.d-none)) {
+        max-width: 100% !important;
+        width: 100% !important;
+    }
+
+    /* Liste genişliği */
+    .list-account-address {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    /* Düzenleme formu genişliği */
+    .edit-form-address {
+        max-width: 100% !important;
+        width: 100% !important;
+    }
+
+    .edit-form-address .box-field {
+        max-width: 600px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .edit-form-address .tf-field,
+    .edit-form-address .select-custom {
+        max-width: 100%;
+    }
+
+    .edit-form-address .tf-field-input,
+    .edit-form-address .tf-select {
+        width: 100%;
+    }
+</style>
+@endpush
+
 @section('content')
     <x-page-title-component :name="$name = 'Adreslerim'"/>
     <section class="flat-spacing-11">
@@ -168,7 +208,7 @@
                                                     @csrf
                                                     @method('PATCH')
                                                     <button type="submit" class="tf-btn btn-sm btn-outline animate-hover-btn">
-                                                        <i class="icon icon-check"></i> Varsayılan Yap
+                                                        <i class="icon icon-check me-1"></i> Varsayılan Yap
                                                     </button>
                                                 </form>
                                             @endif

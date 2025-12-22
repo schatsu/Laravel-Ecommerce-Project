@@ -2,6 +2,8 @@
 
 namespace App\Services;
 
+use App\Enums\Admin\OrderPaymentStatusEnum;
+use App\Enums\Admin\OrderStatusEnum;
 use App\Models\Cart;
 use App\Models\Order;
 use App\Models\OrderItem;
@@ -17,21 +19,21 @@ class OrderService
     {
         return DB::transaction(function () use ($cart, $billingAddress, $shippingAddress, $shippingCost) {
             $cart->load('items.product', 'items.variation');
-            
+
             $subtotal = $cart->subtotal;
             $total = $subtotal + $shippingCost;
 
             $order = Order::create([
                 'user_id' => $cart->user_id,
                 'order_number' => Order::generateOrderNumber(),
-                'status' => 'pending',
+                'status' => OrderStatusEnum::PENDING,
                 'subtotal' => $subtotal,
                 'shipping_cost' => $shippingCost,
                 'total' => $total,
                 'billing_address' => $billingAddress,
                 'shipping_address' => $shippingAddress ?? $billingAddress,
                 'payment_method' => 'iyzico',
-                'payment_status' => 'pending',
+                'payment_status' => OrderPaymentStatusEnum::PENDING,
                 'iyzico_conversation_id' => uniqid('conv_'),
             ]);
 
@@ -61,8 +63,8 @@ class OrderService
     public function markAsPaid(Order $order, string $paymentId): Order
     {
         $order->update([
-            'status' => 'processing',
-            'payment_status' => 'paid',
+            'status' => OrderStatusEnum::PROCESSING,
+            'payment_status' => OrderPaymentStatusEnum::PAID,
             'iyzico_payment_id' => $paymentId,
         ]);
 
@@ -75,8 +77,8 @@ class OrderService
     public function markAsFailed(Order $order): Order
     {
         $order->update([
-            'status' => 'cancelled',
-            'payment_status' => 'failed',
+            'status' => OrderStatusEnum::CANCELLED,
+            'payment_status' => OrderPaymentStatusEnum::FAILED,
         ]);
 
         return $order->fresh();

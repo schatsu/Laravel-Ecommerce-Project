@@ -16,6 +16,7 @@ class Invoice extends Model
         'user_id',
         'order_id',
         'name',
+        'surname',
         'slug',
         'address',
         'phone',
@@ -29,10 +30,11 @@ class Invoice extends Model
         'tax_office',
         'default_invoice',
     ];
-    public function getSlugOptions() : SlugOptions
+
+    public function getSlugOptions(): SlugOptions
     {
         return SlugOptions::create()
-            ->generateSlugsFrom('name')
+            ->generateSlugsFrom(['name', 'surname'])
             ->saveSlugsTo('slug');
     }
 
