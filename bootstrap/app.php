@@ -17,6 +17,10 @@ return Application::configure(basePath: dirname(__DIR__))
             'role_or_permission' => \Spatie\Permission\Middleware\RoleOrPermissionMiddleware::class,
             'is_admin' => \App\Http\Middleware\EnsureUserIsAdmin::class
         ]);
+        
+        $middleware->validateCsrfTokens(except: [
+            'odeme/callback',
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //

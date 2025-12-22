@@ -114,7 +114,7 @@
                                     Kargo ücreti ödeme sayfasında hesaplanacaktır
                                 </p>
                                 <div class="cart-checkout-btn">
-                                    <a href="#" class="tf-btn w-100 btn-fill animate-hover-btn radius-3 justify-content-center">
+                                    <a href="{{route('checkout.index')}}" class="tf-btn w-100 btn-fill animate-hover-btn radius-3 justify-content-center">
                                         <span>Ödemeye Geç</span>
                                     </a>
                                 </div>

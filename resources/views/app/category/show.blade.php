@@ -707,6 +707,16 @@
                             }
                         }
 
+                        // Modal wishlist butonunu güncelle
+                        let $wishlistBtn = $modal.find('.modal-wishlist');
+                        if (product.is_favorited) {
+                            $wishlistBtn.addClass('favorited');
+                            $wishlistBtn.find('.tooltip').text('Favorilerden Çıkar');
+                        } else {
+                            $wishlistBtn.removeClass('favorited');
+                            $wishlistBtn.find('.tooltip').text('Favorilere Ekle');
+                        }
+
                         var myModal = new bootstrap.Modal(document.getElementById(isQuickView ? 'quick_view' : 'quick_add'));
                         myModal.show();
                     })
@@ -948,6 +958,12 @@
 
                 let $btn = $(this);
                 let slug = $btn.data('slug');
+                
+                // Modal wishlist için slug'ı modal'dan al
+                if (!slug && $btn.hasClass('modal-wishlist')) {
+                    let $modal = $btn.closest('.modal');
+                    slug = $modal.data('product-slug');
+                }
 
                 if (!slug || $btn.hasClass('loading')) return;
 

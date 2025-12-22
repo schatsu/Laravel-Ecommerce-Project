@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Front\CartController;
 use App\Http\Controllers\Front\CategoryController;
+use App\Http\Controllers\Front\CheckoutController;
 use App\Http\Controllers\Front\CustomerInvoicesController;
 use App\Http\Controllers\Front\FavoriteController;
 use App\Http\Controllers\Front\ForgetPasswordController;
@@ -39,8 +40,20 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/favoriler', [FavoriteController::class, 'index'])->name('favorite.index');
         Route::post('/toggle/{slug}', [FavoriteController::class, 'toggle'])->name('favorite.toggle');
     });
+    
+    // Checkout Routes
+    Route::prefix('odeme')->as('checkout.')->group(function () {
+        Route::get('/', [CheckoutController::class, 'index'])->name('index');
+        Route::post('/process', [CheckoutController::class, 'process'])->name('process');
+        Route::get('/basarili/{order}', [CheckoutController::class, 'success'])->name('success');
+        Route::get('/basarisiz', [CheckoutController::class, 'fail'])->name('fail');
+    });
+    
     Route::post('cikis', [LoginController::class, 'logout'])->name('logout');
 });
+
+// iyzico callback (CSRF exempted via VerifyCsrfToken middleware)
+Route::post('/odeme/callback', [CheckoutController::class, 'callback'])->name('checkout.callback');
 
 Route::get('/', HomeController::class)->name('home');
 Route::get('kategoriler', [CategoryController::class, 'index'])->name('category.index');

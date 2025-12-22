@@ -21,6 +21,8 @@ class ProductQuickViewResource extends JsonResource
         return [
             'id' => $this->id,
             'name' => $this->name,
+            'slug' => $this->slug,
+            'is_favorited' => auth()->check() && auth()->user()->hasFavorited($this->resource),
             'price' => number_format($displayPrice, 2, ',', '.') . ' ₺',
             'raw_price' => (float) $displayPrice,
             'original_price' => $hasDiscount ? number_format($displayOriginalPrice, 2, ',', '.') . ' ₺' : null,

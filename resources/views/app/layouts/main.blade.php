@@ -984,10 +984,10 @@
                             <span>Sepete Ekle -&nbsp;</span>
                             <span class="tf-qty-price" id="quick-add-total">0,00 ₺</span>
                         </a>
-                        <div class="tf-product-btn-wishlist btn-icon-action">
-                            <i class="icon-heart"></i>
-                            <i class="icon-delete"></i>
-                        </div>
+                        <a href="javascript:void(0);" class="tf-product-btn-wishlist box-icon bg_white wishlist-toggle modal-wishlist">
+                            <span class="icon icon-heart"></span>
+                            <span class="tooltip">Favorilere Ekle</span>
+                        </a>
                         <div class="w-100">
                             <a href="javascript:void(0);" class="btns-full btn-buy-with-iyzico text-white">
                                 <img src="{{asset('front/images/brand/iyzico-colored-bg.svg')}}" alt="iyzico" style="height: 20px;"> ile Öde
@@ -1052,10 +1052,9 @@
                                     <span class="tf-qty-price"></span>
                                 </a>
 
-                                <a href="javascript:void(0);" class="tf-product-btn-wishlist hover-tooltip box-icon bg_white wishlist btn-icon-action">
+                                <a href="javascript:void(0);" class="tf-product-btn-wishlist hover-tooltip box-icon bg_white wishlist-toggle modal-wishlist">
                                     <span class="icon icon-heart"></span>
                                     <span class="tooltip">Favorilere Ekle</span>
-                                    <span class="icon icon-delete"></span>
                                 </a>
                                 <div class="w-100">
                                     <a href="javascript:void(0);" class="btns-full btn-buy-with-iyzico text-white">
