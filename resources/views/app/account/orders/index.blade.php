@@ -1,5 +1,20 @@
 @extends('app.layouts.main')
 @section('title', 'Siparişlerim')
+@push('css')
+<style>
+    .order-item {
+        background: #fff;
+        border: 1px solid #eee;
+        border-radius: 12px;
+        padding: 20px;
+        transition: all 0.3s ease;
+    }
+    .order-item:hover {
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+        border-color: #ddd;
+    }
+</style>
+@endpush
 @section('content')
     <x-page-title-component :name="'Siparişlerim'"/>
     <section class="flat-spacing-11">
@@ -37,11 +52,14 @@
                                         <div class="order-products mb_15">
                                             @foreach($order->items->take(3) as $item)
                                                 <div class="d-flex align-items-center gap-10 mb_10">
-                                                    <img src="{{ $item->product->getFirstMediaUrl('images', 'small') ?: asset('images/placeholder.png') }}"
+                                                    <img src="{{ $item->image_url }}"
                                                          alt="{{ $item->name }}"
-                                                         style="width: 50px; height: 50px; object-fit: cover; border-radius: 4px;">
+                                                         style="width: 100px; height: 100px; object-fit: contain; border-radius: 4px;">
                                                     <div class="flex-grow-1">
                                                         <p class="mb-0">{{ Str::limit($item->name, 40) }}</p>
+                                                        @if($item->variation_info)
+                                                            <small class="text-muted d-block">{{ Str::limit($item->variation_info, 30) }}</small>
+                                                        @endif
                                                         <small class="text-muted">{{ $item->quantity }} adet</small>
                                                     </div>
                                                     <span class="fw-5">{{ number_format($item->total, 2, ',', '.') }} ₺</span>
@@ -55,9 +73,9 @@
                                         <div class="order-footer d-flex justify-content-between align-items-center pt_15 border-top">
                                             <div>
                                                 <span class="fw-6">Toplam:</span>
-                                                <span class="text-primary fw-6">{{ number_format($order->total, 2, ',', '.') }} ₺</span>
+                                                <span class="text-muted fw-6">{{ number_format($order->total, 2, ',', '.') }} ₺</span>
                                             </div>
-                                            <a href="{{ route('account.orders.show', $order) }}" class="tf-btn btn-sm btn-fill animate-hover-btn mt-2">
+                                            <a href="{{ route('account.orders.show', $order->hashid()) }}" class="tf-btn btn-sm btn-fill animate-hover-btn mt-2">
                                                 Detay
                                             </a>
                                         </div>
@@ -65,8 +83,8 @@
                                 @endforeach
                             </div>
 
-                            <div class="tf-pagination-wrap">
-                                {{ $orders->links() }}
+                            <div class="tf-pagination-wrap d-flex justify-content-center align-items-center">
+                                {{ $orders->links('vendor.pagination.custom') }}
                             </div>
                         @else
                             <div class="text-center py-5">
@@ -84,19 +102,3 @@
         </div>
     </section>
 @endsection
-
-@push('css')
-<style>
-    .order-item {
-        background: #fff;
-        border: 1px solid #eee;
-        border-radius: 12px;
-        padding: 20px;
-        transition: all 0.3s ease;
-    }
-    .order-item:hover {
-        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
-        border-color: #ddd;
-    }
-</style>
-@endpush

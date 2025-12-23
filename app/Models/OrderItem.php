@@ -37,4 +37,25 @@ class OrderItem extends Model
     {
         return $this->belongsTo(ProductVariation::class, 'product_variation_id');
     }
+
+    public function getImageUrlAttribute(): string
+    {
+        if ($this->variation) {
+            // Önce preloadedOptions'ı kontrol et (N+1 query çözümü için)
+            $options = $this->relationLoaded('preloadedOptions') 
+                ? $this->getRelation('preloadedOptions') 
+                : $this->variation->selectedOptions();
+
+            foreach ($options as $option) {
+                if ($option->variationType?->type === \App\Enums\ProductVariationType::IMAGE) {
+                    $mediaUrl = $option->getFirstMediaUrl('images', 'small');
+                    if ($mediaUrl) {
+                        return $mediaUrl;
+                    }
+                }
+            }
+        }
+
+        return $this->product?->getFirstMediaUrl('images', 'small') ?: asset('images/placeholder.png');
+    }
 }

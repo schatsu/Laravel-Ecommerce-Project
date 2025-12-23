@@ -1,5 +1,18 @@
 @extends('app.layouts.main')
 @section('title', 'Sipariş Detayı - ' . $order->order_number)
+@push('css')
+<style>
+    .order-detail-header,
+    .order-products-card,
+    .order-summary-card,
+    .order-address-card {
+        background: #fff;
+        border: 1px solid #eee;
+        border-radius: 12px;
+        padding: 20px;
+    }
+</style>
+@endpush
 @section('content')
     <x-page-title-component :name="'Sipariş Detayı'"/>
     <section class="flat-spacing-11">
@@ -39,9 +52,9 @@
                                     <h6 class="mb_20">Sipariş Ürünleri</h6>
                                     @foreach($order->items as $item)
                                         <div class="order-product-item d-flex gap-15 mb_15 pb_15 {{ !$loop->last ? 'border-bottom' : '' }}">
-                                            <img src="{{ $item->product->getFirstMediaUrl('images', 'small') ?: asset('images/placeholder.png') }}" 
-                                                 alt="{{ $item->name }}" 
-                                                 style="width: 80px; height: 80px; object-fit: cover; border-radius: 8px;">
+                                            <img src="{{ $item->image_url }}"
+                                                 alt="{{ $item->name }}"
+                                                 style="width: 100px; height: 100px; object-fit: contain; border-radius: 4px;">
                                             <div class="flex-grow-1">
                                                 <h6 class="mb_5">{{ $item->name }}</h6>
                                                 @if($item->variation_info)
@@ -57,8 +70,12 @@
                                         </div>
                                     @endforeach
                                 </div>
+                              <div class="mt_20">
+                                  <a href="{{ route('account.orders.index') }}" class="tf-btn btn-outline-dark animate-hover-btn">
+                                      <i class="icon-arrow-left me-1"></i> Siparişlerime Dön
+                                  </a>
+                              </div>
                             </div>
-
                             <!-- Özet ve Adres -->
                             <div class="col-lg-4">
                                 <!-- Sipariş Özeti -->
@@ -75,10 +92,9 @@
                                     <hr>
                                     <div class="d-flex justify-content-between">
                                         <strong>Toplam</strong>
-                                        <strong class="text-primary">{{ number_format($order->total, 2, ',', '.') }} ₺</strong>
+                                        <strong class="text-muted">{{ number_format($order->total, 2, ',', '.') }} ₺</strong>
                                     </div>
                                 </div>
-
                                 <!-- Teslimat Adresi -->
                                 <div class="order-address-card">
                                     <h6 class="mb_15">Teslimat Adresi</h6>
@@ -97,29 +113,9 @@
                                 </div>
                             </div>
                         </div>
-
-                        <div class="mt_20">
-                            <a href="{{ route('account.orders.index') }}" class="tf-btn btn-outline-dark animate-hover-btn">
-                                <i class="icon-arrow-left me-1"></i> Siparişlerime Dön
-                            </a>
-                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </section>
 @endsection
-
-@push('css')
-<style>
-    .order-detail-header,
-    .order-products-card,
-    .order-summary-card,
-    .order-address-card {
-        background: #fff;
-        border: 1px solid #eee;
-        border-radius: 12px;
-        padding: 20px;
-    }
-</style>
-@endpush

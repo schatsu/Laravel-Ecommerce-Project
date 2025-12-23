@@ -41,7 +41,7 @@
                                         <i class="icon icon-account"></i>
                                         <span>Hesabım</span>
                                     </a>
-                                    <a class="dropdown-item" href="">
+                                    <a class="dropdown-item" href="{{route('account.orders.index')}}">
                                         <i class="icon icon-car-order"></i>
                                         <span>Siparişlerim</span>
                                     </a>

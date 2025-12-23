@@ -7,9 +7,12 @@ use App\Enums\Admin\OrderStatusEnum;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Mtvs\EloquentHashids\HasHashid;
 
 class Order extends Model
 {
+    use HasHashid;
+
     protected $fillable = [
         'user_id',
         'order_number',

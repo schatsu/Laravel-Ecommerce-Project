@@ -60,14 +60,20 @@ class CartItem extends Model
     public function getImageUrlAttribute(): ?string
     {
         if ($this->variation) {
-            $options = $this->variation->selectedOptions();
+            $options = $this->relationLoaded('preloadedOptions')
+                ? $this->getRelation('preloadedOptions')
+                : $this->variation->selectedOptions();
+
             foreach ($options as $option) {
-                if ($option->hasMedia('images')) {
-                    return $option->getFirstMediaUrl('images', 'thumb');
+                if ($option->variationType?->type === \App\Enums\ProductVariationType::IMAGE) {
+                    $mediaUrl = $option->getFirstMediaUrl('images', 'small');
+                    if ($mediaUrl) {
+                        return $mediaUrl;
+                    }
                 }
             }
         }
 
-        return $this->product->getFirstMediaUrl('images', 'thumb');
+        return $this->product?->getFirstMediaUrl('images', 'small') ?: asset('images/placeholder.png');
     }
 }

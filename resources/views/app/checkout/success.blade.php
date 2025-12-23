@@ -34,10 +34,10 @@
                             
                             @foreach($order->items as $item)
                                 <div class="d-flex align-items-center mb_15">
-                                    <img src="{{ $item->product->getFirstMediaUrl('images', 'small') ?: asset('images/placeholder.png') }}" 
+                                    <img src="{{ $item->image_url }}" 
                                          alt="{{ $item->name }}" 
                                          class="me-3" 
-                                         style="width: 50px; height: 50px; object-fit: cover;">
+                                         style="width: 100px; height: 100px; object-fit: contain;">
                                     <div class="flex-grow-1">
                                         <p class="mb-0">{{ $item->name }}</p>
                                         @if($item->variation_info)

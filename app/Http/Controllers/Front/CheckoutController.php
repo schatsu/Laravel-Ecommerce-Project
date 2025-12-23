@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Front\CheckoutProcessRequest;
 use App\Models\Country;
 use App\Models\Order;
+use App\Models\VariationTypeOption;
 use App\Services\CartService;
 use App\Services\IyzicoService;
 use App\Services\OrderService;
@@ -14,6 +15,7 @@ use Illuminate\Contracts\View\Factory;
 use Illuminate\Foundation\Application;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Collection;
 use Illuminate\View\View;
 
 class CheckoutController extends Controller
@@ -34,6 +36,8 @@ class CheckoutController extends Controller
         if ($cart->is_empty) {
             return redirect()->route('home')->with('toast_error', 'Sepetiniz boş.');
         }
+
+        $this->preloadVariationOptions($cart->items);
 
         $user = auth()->user();
         $addresses = $user->invoices;
@@ -71,13 +75,10 @@ class CheckoutController extends Controller
             'zip_code' => $address->zip_code ?? '34000',
         ];
 
-        // Kargo ücreti (örnek: 500 TL üstü ücretsiz)
         $shippingCost = $cart->subtotal >= 500 ? 0 : 29.90;
 
-        // Sipariş oluştur
         $order = $this->orderService->createFromCart($cart, $billingAddress, null, $shippingCost);
 
-        // iyzico checkout form oluştur
         $checkoutForm = $this->iyzicoService->createCheckoutForm($order, $user, $billingAddress);
 
         if ($checkoutForm->getStatus() !== 'success') {
@@ -85,7 +86,6 @@ class CheckoutController extends Controller
             return redirect()->route('checkout.fail')->with('error', $checkoutForm->getErrorMessage());
         }
 
-        // Token'ı siparişe kaydet
         $order->update(['iyzico_payment_id' => $checkoutForm->getToken()]);
 
         return view('app.checkout.payment', [
@@ -104,8 +104,7 @@ class CheckoutController extends Controller
 
         $result = $this->iyzicoService->retrieveCheckoutForm($token);
 
-        // Siparişi bul
-        $order = Order::where('iyzico_payment_id', $token)->first();
+        $order = Order::query()->where('iyzico_payment_id', $token)->first();
 
         if (!$order) {
             return redirect()->route('checkout.fail')->with('error', 'Sipariş bulunamadı.');
@@ -113,21 +112,22 @@ class CheckoutController extends Controller
 
         if ($this->iyzicoService->isPaymentSuccessful($result)) {
             $this->orderService->markAsPaid($order, $result->getPaymentId());
-            return redirect()->route('checkout.success', $order);
+            return redirect()->route('checkout.success', $order->hashid());
         }
 
         $this->orderService->markAsFailed($order);
         return redirect()->route('checkout.fail')->with('error', $result->getErrorMessage() ?? 'Ödeme başarısız.');
     }
 
-    public function success(Order $order): View
+    public function success(string $hashId): View
     {
-        // Sadece kendi siparişini görebilsin
-        if ($order->user_id !== auth()->id()) {
-            abort(403);
-        }
+        $order = Order::query()
+            ->whereRelation('user', 'id', auth()->id())
+            ->findByHashidOrFail($hashId);
 
-        $order->load('items.product.media');
+        $order->load(['items.product.media', 'items.variation']);
+
+        $this->preloadVariationOptions($order->items);
 
         return view('app.checkout.success', compact('order'));
     }
@@ -135,5 +135,31 @@ class CheckoutController extends Controller
     public function fail(): View
     {
         return view('app.checkout.fail');
+    }
+
+    private function preloadVariationOptions(Collection $items): void
+    {
+        $allOptionIds = $items->flatMap(
+            fn($item) => $item->variation?->variation_type_option_ids ?? []
+        )->unique()->values()->all();
+
+        if (empty($allOptionIds)) {
+            return;
+        }
+
+        $options = VariationTypeOption::with(['variationType', 'media'])
+            ->whereIn('id', $allOptionIds)
+            ->get()
+            ->keyBy('id');
+
+        foreach ($items as $item) {
+            if ($item->variation) {
+                $item->setRelation('preloadedOptions',
+                    collect($item->variation->variation_type_option_ids ?? [])
+                        ->map(fn($id) => $options->get($id))
+                        ->filter()
+                );
+            }
+        }
     }
 }
