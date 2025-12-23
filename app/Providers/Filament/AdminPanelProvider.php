@@ -36,7 +36,7 @@ class AdminPanelProvider extends PanelProvider
             ->unsavedChangesAlerts()
             ->profile(isSimple: false)
             ->font('montserrat')
-            ->brandName('Ata Silver')
+            ->brandName('Demo E-Ticaret')
             ->colors([
                 'danger' => Color::Rose,
                 'gray' => Color::Gray,
