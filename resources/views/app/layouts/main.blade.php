@@ -4,7 +4,7 @@
 
 <head>
     <meta charset="utf-8">
-    <title>Ata Silver | @yield('title')</title>
+    <title>Demo E-Ticaret | @yield('title')</title>
 
     <meta name="author" content="tufiworks.com">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
