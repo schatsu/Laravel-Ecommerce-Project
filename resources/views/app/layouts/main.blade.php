@@ -46,6 +46,104 @@
             background-color: var(--primary) !important;
         }
     </style>
+    <style>
+        .modal-shopping-cart .modal-content {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+        .modal-shopping-cart .wrap {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        .tf-mini-cart-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        .tf-mini-cart-wrap {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        .tf-mini-cart-main {
+            flex: 1;
+            overflow: hidden;
+        }
+        .tf-mini-cart-sroll {
+            height: 100%;
+            overflow-y: auto;
+            padding: 0 20px;
+        }
+        .tf-mini-cart-bottom {
+            flex-shrink: 0;
+            background: #fff;
+            border-top: 1px solid #eee;
+            padding-top: 15px;
+        }
+        .tf-mini-cart-item {
+            display: flex;
+            gap: 15px;
+            padding: 15px 0;
+            border-bottom: 1px solid #eee;
+        }
+        .tf-mini-cart-item:last-child {
+            border-bottom: none;
+        }
+        .tf-mini-cart-image {
+            flex-shrink: 0;
+        }
+        .tf-mini-cart-image img {
+            width: 90px;
+            height: 90px;
+            object-fit: contain;
+            border-radius: 8px;
+            background: #f9f9f9;
+        }
+        .tf-mini-cart-info {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        .tf-mini-cart-info .title {
+            font-size: 14px;
+            font-weight: 500;
+            color: #1a1a1a;
+            line-height: 1.3;
+        }
+        .tf-mini-cart-info .meta-variant {
+            font-size: 12px;
+            color: #666;
+        }
+        .tf-mini-cart-info .price {
+            font-size: 15px;
+            color: #1a1a1a;
+            margin: 2px 0;
+        }
+        .tf-mini-cart-btns {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-top: 6px;
+        }
+        .tf-mini-cart-remove {
+            font-size: 12px;
+            color: #999;
+            cursor: pointer;
+            text-decoration: underline;
+        }
+        .tf-mini-cart-remove:hover {
+            color: #e74c3c;
+        }
+        .tf-mini-cart-items {
+            padding: 5px 0;
+        }
+    </style>
 
 </head>
 

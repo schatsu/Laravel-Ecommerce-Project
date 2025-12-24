@@ -3,7 +3,6 @@
 namespace App\Filament\Resources\ProductResource\Pages;
 
 use App\Filament\Resources\ProductResource;
-use Dflydev\DotAccessData\Data;
 use Filament\Actions;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Hidden;
@@ -11,7 +10,6 @@ use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\Toggle;
 use Filament\Forms\Form;
 use Filament\Resources\Pages\EditRecord;
 use Illuminate\Database\Eloquent\Model;
@@ -21,13 +19,26 @@ class ProductVariations extends EditRecord
     protected static string $resource = ProductResource::class;
 
     protected static ?string $navigationLabel = 'Ürün Varyasyonları';
-
+    protected static ?string $title = 'Varyasyonları Düzenle';
     protected static ?string $navigationIcon = 'heroicon-o-queue-list';
 
     protected function getHeaderActions(): array
     {
         return [
+            Actions\Action::make('back')
+                ->label('Ürüne Dön')
+                ->icon('heroicon-o-arrow-left')
+                ->url(fn () => ProductResource::getUrl('edit', ['record' => $this->record])),
             Actions\DeleteAction::make(),
+        ];
+    }
+
+    public function getBreadcrumbs(): array
+    {
+        return [
+            ProductResource::getUrl() => 'Ürünler',
+            ProductResource::getUrl('edit', ['record' => $this->record]) => $this->record->name,
+            '' => 'Varyasyonlar',
         ];
     }
 

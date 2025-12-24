@@ -55,8 +55,10 @@ class ProductQuickViewResource extends JsonResource
             })->values(),
             'variations' => $this->variations->map(function ($variation) {
                 $options = $variation->selectedOptions();
-                $hasVariationDiscount = $variation->discount_price > 0;
-                $effectivePrice = $hasVariationDiscount ? $variation->discount_price : $variation->selling_price;
+                $discountPrice = (float) $variation->discount_price;
+                $sellingPrice = (float) $variation->selling_price;
+                $hasVariationDiscount = $discountPrice > 0 && $discountPrice < $sellingPrice;
+                $effectivePrice = $hasVariationDiscount ? $discountPrice : $sellingPrice;
 
                 return [
                     'id' => $variation->id,

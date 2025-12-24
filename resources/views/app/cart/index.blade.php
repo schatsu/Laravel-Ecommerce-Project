@@ -106,10 +106,60 @@
                                 </div>
                             </div>
                             <div class="tf-page-cart-checkout">
+                                {{-- Kupon Bölümü --}}
+                                <div class="tf-cart-coupon mb-3">
+                                    <div id="coupon-form-container" @if($cart->coupon) style="display:none;" @endif>
+                                        <div class="input-group">
+                                            <input type="text" 
+                                                   class="form-control" 
+                                                   id="coupon-code-input" 
+                                                   placeholder="Kupon kodunuz"
+                                                   style="border-radius: 0;">
+                                            <button type="button" 
+                                                    class="tf-btn btn-fill" 
+                                                    id="apply-coupon-btn"
+                                                    style="border-radius: 0;">
+                                                Uygula
+                                            </button>
+                                        </div>
+                                        <div id="coupon-error" class="text-danger small mt-1" style="display:none;"></div>
+                                    </div>
+                                    
+                                    {{-- Uygulanan Kupon --}}
+                                    <div id="applied-coupon-container" @if(!$cart->coupon) style="display:none;" @endif>
+                                        <div class="applied-coupon d-flex justify-content-between align-items-center p-2 bg-success-subtle rounded">
+                                            <div>
+                                                <i class="icon-check text-success me-1"></i>
+                                                <strong id="applied-coupon-code">{{ $cart->coupon?->code }}</strong>
+                                                <span class="text-muted small ms-1" id="applied-coupon-value">
+                                                    ({{ $cart->coupon?->formatted_value }})
+                                                </span>
+                                            </div>
+                                            <button type="button" class="btn btn-sm btn-link text-danger p-0" id="remove-coupon-btn">
+                                                <i class="icon-close"></i> Kaldır
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {{-- Ara Toplam --}}
                                 <div class="tf-cart-totals-discounts">
                                     <h3>Ara Toplam</h3>
                                     <span class="total-value cart-subtotal-value">{{ number_format($cart->subtotal, 2, ',', '.') }}₺</span>
                                 </div>
+
+                                {{-- İndirim Satırı --}}
+                                <div class="tf-cart-totals-discounts discount-row" @if(!$cart->coupon) style="display:none;" @endif>
+                                    <h3 class="text-success">İndirim</h3>
+                                    <span class="text-success discount-value">-{{ number_format($cart->discount_amount, 2, ',', '.') }}₺</span>
+                                </div>
+
+                                {{-- Genel Toplam --}}
+                                <div class="tf-cart-totals-discounts border-top pt-2 mt-2">
+                                    <h3 class="fw-bold">Toplam</h3>
+                                    <span class="total-value cart-total-value fw-bold">{{ number_format($cart->total, 2, ',', '.') }}₺</span>
+                                </div>
+
                                 <p class="tf-cart-tax">
                                     Kargo ücreti ödeme sayfasında hesaplanacaktır
                                 </p>
@@ -278,6 +328,108 @@ $(document).ready(() => {
         const itemId = $(this).data('item-id');
         const qty = parseInt($row.find('.quantity-input').val(), 10) || 1;
         if (qty > 1) updateCartItem(itemId, qty - 1, $row);
+    });
+
+    // ========== KUPON İŞLEMLERİ ==========
+    
+    const updateTotals = (subtotal, discount, total) => {
+        $('.cart-subtotal-value').text(formatPrice(subtotal));
+        $('.discount-value').text('-' + formatPrice(discount));
+        $('.cart-total-value').text(formatPrice(total));
+        updateShippingProgress(subtotal);
+    };
+
+    const showCouponError = (message) => {
+        $('#coupon-error').text(message).show();
+    };
+
+    const hideCouponError = () => {
+        $('#coupon-error').hide();
+    };
+
+    const showAppliedCoupon = (coupon, discount) => {
+        $('#applied-coupon-code').text(coupon.code);
+        $('#applied-coupon-value').text('(' + coupon.formatted_value + ')');
+        $('#coupon-form-container').hide();
+        $('#applied-coupon-container').show();
+        $('.discount-row').show();
+        hideCouponError();
+    };
+
+    const hideCoupon = () => {
+        $('#coupon-code-input').val('');
+        $('#coupon-form-container').show();
+        $('#applied-coupon-container').hide();
+        $('.discount-row').hide();
+    };
+
+    // Kupon Uygula
+    $('#apply-coupon-btn').on('click', async function() {
+        const code = $('#coupon-code-input').val().trim();
+        
+        if (!code) {
+            showCouponError('Lütfen kupon kodu girin.');
+            return;
+        }
+
+        const $btn = $(this);
+        const originalText = $btn.text();
+        $btn.prop('disabled', true).text('...');
+        hideCouponError();
+
+        try {
+            const response = await axios.post('{{ route("cart.coupon.apply") }}', { code });
+            
+            if (response.data.success) {
+                const data = response.data.data;
+                showAppliedCoupon(data.coupon, data.discount_raw);
+                
+                // Subtotal'ı alıp toplam hesapla
+                const currentSubtotal = normalizePrice($('.cart-subtotal-value').text());
+                updateTotals(currentSubtotal, data.discount_raw, data.total_raw);
+                
+                toast(response.data.message, 'success');
+            } else {
+                showCouponError(response.data.message);
+            }
+        } catch (error) {
+            const message = error.response?.data?.message || 'Kupon uygulanırken bir hata oluştu.';
+            showCouponError(message);
+        } finally {
+            $btn.prop('disabled', false).text(originalText);
+        }
+    });
+
+    // Enter tuşu ile kupon uygula
+    $('#coupon-code-input').on('keypress', function(e) {
+        if (e.which === 13) {
+            e.preventDefault();
+            $('#apply-coupon-btn').click();
+        }
+    });
+
+    // Kupon Kaldır
+    $('#remove-coupon-btn').on('click', async function() {
+        const $btn = $(this);
+        $btn.prop('disabled', true);
+
+        try {
+            const response = await axios.delete('{{ route("cart.coupon.remove") }}');
+            
+            if (response.data.success) {
+                hideCoupon();
+                
+                const data = response.data.data;
+                const subtotal = normalizePrice(data.subtotal);
+                updateTotals(subtotal, 0, subtotal);
+                
+                toast(response.data.message, 'success');
+            }
+        } catch (error) {
+            toast('Kupon kaldırılırken bir hata oluştu.', 'error');
+        } finally {
+            $btn.prop('disabled', false);
+        }
     });
 });
 </script>

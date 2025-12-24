@@ -40,13 +40,13 @@ class ProductViewService
 
     public function calculatePricingAndStock(Product $product, ?object $selectedVariation): array
     {
-        $currentSellingPrice = $selectedVariation
+        $currentSellingPrice = (float) ($selectedVariation
             ? $selectedVariation->selling_price
-            : $product->selling_price;
+            : $product->selling_price);
 
-        $currentDiscountPrice = $selectedVariation
+        $currentDiscountPrice = (float) ($selectedVariation
             ? $selectedVariation->discount_price
-            : $product->discount_price;
+            : $product->discount_price);
 
         $currentStock = $selectedVariation
             ? $selectedVariation->stock_quantity

@@ -130,13 +130,19 @@ class CartService
     protected function calculateUnitPrice(Product $product, ?ProductVariation $variation): float
     {
         if ($variation) {
-            return $variation->discount_price && $variation->discount_price < $variation->selling_price
-                ? (float) $variation->discount_price
-                : (float) $variation->selling_price;
+            $discountPrice = (float) $variation->discount_price;
+            $sellingPrice = (float) $variation->selling_price;
+            
+            return ($discountPrice > 0 && $discountPrice < $sellingPrice)
+                ? $discountPrice
+                : $sellingPrice;
         }
 
-        return $product->discount_price && $product->discount_price < $product->selling_price
-            ? (float) $product->discount_price
-            : (float) $product->selling_price;
+        $discountPrice = (float) $product->discount_price;
+        $sellingPrice = (float) $product->selling_price;
+        
+        return ($discountPrice > 0 && $discountPrice < $sellingPrice)
+            ? $discountPrice
+            : $sellingPrice;
     }
 }

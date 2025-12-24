@@ -70,4 +70,6 @@ Route::prefix('sepet')->as('cart.')->group(function () {
     Route::patch('/items/{item}', [CartController::class, 'update'])->name('update');
     Route::delete('/items/{item}', [CartController::class, 'destroy'])->name('destroy');
     Route::delete('/', [CartController::class, 'destroyAll'])->name('destroyAll');
+    Route::post('/coupon', [CartController::class, 'applyCoupon'])->name('coupon.apply');
+    Route::delete('/coupon', [CartController::class, 'removeCoupon'])->name('coupon.remove');
 });

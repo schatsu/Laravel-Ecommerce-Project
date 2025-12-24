@@ -19,6 +19,7 @@ class Order extends Model
         'status',
         'subtotal',
         'shipping_cost',
+        'discount_amount',
         'total',
         'billing_address',
         'shipping_address',
@@ -27,6 +28,7 @@ class Order extends Model
         'iyzico_payment_id',
         'iyzico_conversation_id',
         'notes',
+        'coupon_id',
     ];
 
     protected $casts = [
@@ -34,6 +36,7 @@ class Order extends Model
         'shipping_address' => 'array',
         'subtotal' => 'decimal:2',
         'shipping_cost' => 'decimal:2',
+        'discount_amount' => 'decimal:2',
         'total' => 'decimal:2',
         'status' => OrderStatusEnum::class,
         'payment_status' => OrderPaymentStatusEnum::class,
@@ -42,6 +45,11 @@ class Order extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function coupon(): BelongsTo
+    {
+        return $this->belongsTo(Coupon::class);
     }
 
     public function items(): HasMany
