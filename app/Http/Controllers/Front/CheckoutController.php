@@ -172,18 +172,37 @@ class CheckoutController extends Controller
         $conversationId = $request->input('conversationId');
         $mdStatus = $request->input('mdStatus');
 
+        // Debug log
+        \Log::info('3D Callback received', [
+            'status' => $status,
+            'paymentId' => $paymentId,
+            'conversationId' => $conversationId,
+            'mdStatus' => $mdStatus,
+            'all_data' => $request->all(),
+        ]);
+
         $order = Order::query()->where('iyzico_conversation_id', $conversationId)->first();
 
         if (!$order) {
+            \Log::error('Order not found for conversationId: ' . $conversationId);
             return redirect()->route('checkout.fail')->with('error', 'Sipariş bulunamadı.');
         }
 
         if ($status !== 'success' || !in_array($mdStatus, ['1', 1])) {
+            \Log::warning('3D Secure failed', ['status' => $status, 'mdStatus' => $mdStatus]);
             $this->orderService->markAsFailed($order);
             return redirect()->route('checkout.fail')->with('error', '3D Secure doğrulaması başarısız.');
         }
 
         $result = $this->iyzicoService->complete3DSecurePayment($paymentId);
+
+        // Debug log - iyzico result
+        \Log::info('3D Payment completion result', [
+            'status' => $result->getStatus(),
+            'paymentStatus' => $result->getPaymentStatus(),
+            'errorCode' => $result->getErrorCode(),
+            'errorMessage' => $result->getErrorMessage(),
+        ]);
 
         if ($this->iyzicoService->isPaymentSuccessful($result)) {
             $this->orderService->markAsPaid($order, $result->getPaymentId());
