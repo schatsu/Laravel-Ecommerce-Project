@@ -159,6 +159,18 @@ class IyzicoService
      */
     public function isPaymentSuccessful($result): bool
     {
-        return $result->getStatus() === 'success' && $result->getPaymentStatus() === 'SUCCESS';
+        // 3D Secure tamamlamada paymentStatus null gelebilir, sadece status kontrolü yeterli
+        if ($result->getStatus() !== 'success') {
+            return false;
+        }
+        
+        // Hata varsa başarısız
+        if ($result->getErrorCode() !== null) {
+            return false;
+        }
+        
+        // paymentStatus varsa SUCCESS olmalı, yoksa status success yeterli
+        $paymentStatus = $result->getPaymentStatus();
+        return $paymentStatus === null || $paymentStatus === 'SUCCESS';
     }
 }
