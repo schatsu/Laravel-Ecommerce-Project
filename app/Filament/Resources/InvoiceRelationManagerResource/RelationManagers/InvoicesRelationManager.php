@@ -16,6 +16,8 @@ class InvoicesRelationManager extends RelationManager
 {
     protected static string $relationship = 'invoices';
     protected static ?string $title = 'Faturalar';
+    protected static ?string $pluralModelLabel = 'Fatura';
+    protected static ?string $label = 'Fatura';
 
 
     public function form(Form $form): Form
@@ -26,74 +28,87 @@ class InvoicesRelationManager extends RelationManager
                 ->required()
                 ->maxLength(255),
 
-            Forms\Components\Select::make('country_id')
-                ->label('Ülke')
-                ->options(Country::query()->pluck('name', 'id'))
-                ->searchable()
-                ->reactive()
-                ->afterStateUpdated(fn($state, callable $set) => $set('city_id', null))
-                ->required(),
+            Forms\Components\Grid::make(3)->schema([
+                Forms\Components\Select::make('country_id')
+                    ->label('Ülke')
+                    ->options(Country::query()
+                        ->orderByRaw("CASE WHEN (name = 'Türkiye') THEN 1 ELSE 0 END DESC")
+                        ->pluck('name', 'id')
+                    )
+                    ->searchable()
+                    ->live()
+                    ->afterStateUpdated(fn (Forms\Set $set) => $set('city_id', null))
+                    ->required(),
 
-            Forms\Components\Select::make('city_id')
-                ->label('İl')
-                ->options(fn(callable $get) => City::query()->where('country_id', $get('country_id'))->pluck('name', 'id')
-                )
-                ->searchable()
-                ->reactive()
-                ->afterStateUpdated(fn($state, callable $set) => $set('district_id', null))
-                ->required(),
+                Forms\Components\Select::make('city_id')
+                    ->label('İl')
+                    ->options(fn (Forms\Get $get) => City::query()
+                        ->where('country_id', $get('country_id'))
+                        ->pluck('name', 'id'))
+                    ->searchable()
+                    ->live()
+                    ->afterStateUpdated(fn (Forms\Set $set) => $set('district_id', null))
+                    ->required(),
 
-            Forms\Components\Select::make('district_id')
-                ->label('İlçe')
-                ->options(fn(callable $get) => District::query()->where('city_id', $get('city_id'))->pluck('name', 'id')
-                )
-                ->searchable()
-                ->required(),
+                Forms\Components\Select::make('district_id')
+                    ->label('İlçe')
+                    ->options(fn (Forms\Get $get) => District::query()
+                        ->where('city_id', $get('city_id'))
+                        ->pluck('name', 'id'))
+                    ->searchable()
+                    ->required(),
+            ]),
 
-            Forms\Components\Select::make('company_type')
-                ->label('Fatura Türü')
-                ->options(InvoiceCompanyTypeEnum::labels())
-                ->required()
-                ->reactive(),
+            Forms\Components\Section::make('Fatura Bilgileri')->schema([
+                Forms\Components\Select::make('company_type')
+                    ->label('Fatura Türü')
+                    ->options(InvoiceCompanyTypeEnum::labels())
+                    ->required()
+                    ->live()
+                    ->enum(InvoiceCompanyTypeEnum::class),
 
-            Forms\Components\TextInput::make('identity_number')
-                ->label('T.C. Kimlik No')
-                ->maxLength(11)
-                ->visible(fn(Forms\Get $get) => $get('company_type') === InvoiceCompanyTypeEnum::INDIVIDUAL->value
-                ),
+                Forms\Components\TextInput::make('identity_number')
+                    ->label('T.C. Kimlik No')
+                    ->maxLength(11)
+                    ->required()
+                    ->visible(fn (Forms\Get $get) => $get('company_type') === InvoiceCompanyTypeEnum::INDIVIDUAL->value),
 
-            Forms\Components\TextInput::make('company_name')
-                ->label('Şirket Adı')
-                ->maxLength(255)
-                ->visible(fn(Forms\Get $get) => $get('company_type') === InvoiceCompanyTypeEnum::CORPORATE->value
-                ),
 
-            Forms\Components\TextInput::make('tax_number')
-                ->label('Vergi Numarası')
-                ->maxLength(50)
-                ->visible(fn(Forms\Get $get) => $get('company_type') === InvoiceCompanyTypeEnum::CORPORATE->value
-                ),
+                Forms\Components\Grid::make()->schema([
+                    Forms\Components\TextInput::make('company_name')
+                        ->label('Şirket Adı')
+                        ->maxLength(255)
+                        ->required(),
 
-            Forms\Components\TextInput::make('tax_office')
-                ->label('Vergi Dairesi')
-                ->maxLength(255)
-                ->visible(fn(Forms\Get $get) => $get('company_type') === InvoiceCompanyTypeEnum::CORPORATE->value
-                ),
+                    Forms\Components\TextInput::make('tax_number')
+                        ->label('Vergi Numarası')
+                        ->maxLength(50)
+                        ->required(),
 
-            Forms\Components\TextInput::make('phone')
-            ->label('Telefon')
-            ->prefix('+90')
-            ->mask('(999) 999 99 99'),
+                    Forms\Components\TextInput::make('tax_office')
+                        ->label('Vergi Dairesi')
+                        ->maxLength(255)
+                        ->required(),
+                ])->visible(fn (Forms\Get $get) => $get('company_type') === InvoiceCompanyTypeEnum::CORPORATE->value),
+            ]),
 
-            Forms\Components\Toggle::make('default_invoice')
-                ->label('Varsayılan Fatura'),
+            Forms\Components\Grid::make(2)->schema([
+                Forms\Components\TextInput::make('phone')
+                    ->label('Telefon')
+                    ->tel()
+                    ->prefix('+90')
+                    ->mask('(999) 999 99 99'),
+
+                Forms\Components\Toggle::make('default_invoice')
+                    ->label('Varsayılan Fatura Adresi')
+                    ->inline(false),
+            ]),
 
             Forms\Components\Textarea::make('address')
                 ->label('Adres')
                 ->rows(3)
                 ->required()
                 ->columnSpanFull(),
-
         ]);
     }
 
@@ -102,8 +117,11 @@ class InvoicesRelationManager extends RelationManager
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('name')->label('Ad Soyad / Yetkili'),
-                Tables\Columns\TextColumn::make('company_name')->label('Şirket'),
+                Tables\Columns\TextColumn::make('name')
+                    ->label('Ad Soyad / Yetkili'),
+                Tables\Columns\TextColumn::make('company_name')
+                    ->label('Şirket')
+                    ->hidden(fn($record) => $record?->company_type === InvoiceCompanyTypeEnum::INDIVIDUAL?->value),
                 Tables\Columns\TextColumn::make('company_type')
                     ->label('Fatura Türü')
                     ->state(function ($record) {
@@ -130,9 +148,9 @@ class InvoicesRelationManager extends RelationManager
                     ->modalHeading('Yeni Fatura Oluştur')
             ])
             ->actions([
-                Tables\Actions\ViewAction::make(),
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(),
+                Tables\Actions\ViewAction::make()->iconButton(),
+                Tables\Actions\EditAction::make()->iconButton(),
+                Tables\Actions\DeleteAction::make()->iconButton(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

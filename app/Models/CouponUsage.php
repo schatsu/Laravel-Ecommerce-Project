@@ -14,9 +14,13 @@ class CouponUsage extends Model
         'discount_amount',
     ];
 
-    protected $casts = [
-        'discount_amount' => 'decimal:2',
-    ];
+
+    protected function casts(): array
+    {
+        return [
+            'discount_amount' => 'decimal:2',
+        ];
+    }
 
     public function coupon(): BelongsTo
     {

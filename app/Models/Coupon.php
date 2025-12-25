@@ -25,18 +25,22 @@ class Coupon extends Model
         'is_active',
     ];
 
-    protected $casts = [
-        'type' => CouponType::class,
-        'value' => 'decimal:2',
-        'min_order_amount' => 'decimal:2',
-        'max_discount_amount' => 'decimal:2',
-        'usage_limit' => 'integer',
-        'usage_limit_per_user' => 'integer',
-        'used_count' => 'integer',
-        'starts_at' => 'datetime',
-        'expires_at' => 'datetime',
-        'is_active' => 'boolean',
-    ];
+
+    protected function casts(): array
+    {
+        return [
+            'type' => CouponType::class,
+            'value' => 'decimal:2',
+            'min_order_amount' => 'decimal:2',
+            'max_discount_amount' => 'decimal:2',
+            'usage_limit' => 'integer',
+            'usage_limit_per_user' => 'integer',
+            'used_count' => 'integer',
+            'starts_at' => 'datetime',
+            'expires_at' => 'datetime',
+            'is_active' => 'boolean',
+        ];
+    }
 
     public function usages(): HasMany
     {
@@ -122,12 +126,12 @@ class Coupon extends Model
             CouponType::FIXED => (float) $this->value,
         };
 
-        // Maksimum indirim kontrolü
+
         if ($this->max_discount_amount && $discount > (float) $this->max_discount_amount) {
             $discount = (float) $this->max_discount_amount;
         }
 
-        // İndirim subtotal'dan fazla olamaz
+
         if ($discount > $subtotal) {
             $discount = $subtotal;
         }

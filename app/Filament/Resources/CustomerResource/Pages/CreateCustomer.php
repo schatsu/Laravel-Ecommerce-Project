@@ -4,7 +4,6 @@ namespace App\Filament\Resources\CustomerResource\Pages;
 
 use App\Filament\Resources\CustomerResource;
 use Filament\Resources\Pages\CreateRecord;
-use Illuminate\Support\Facades\Hash;
 
 class CreateCustomer extends CreateRecord
 {
@@ -12,13 +11,16 @@ class CreateCustomer extends CreateRecord
 
     protected static ?string $title = 'Müşteri Ekle';
 
-    protected function mutateFormDataBeforeCreate(array $data): array
+    protected function afterCreate(): void
     {
-        if (isset($data['password'])) {
-            $data['password'] = Hash::make($data['password']);
-        }
+        // Kupon seçildiyse sepet oluştur ve kuponu ata
+        $couponId = $this->data['cart_coupon_id'] ?? null;
         
-        return $data;
+        if ($couponId) {
+            $cart = $this->record->cart()->create([
+                'coupon_id' => $couponId,
+            ]);
+        }
     }
 
     protected function getRedirectUrl(): string

@@ -5,7 +5,6 @@ namespace App\Filament\Resources\CustomerResource\Pages;
 use App\Filament\Resources\CustomerResource;
 use Filament\Actions;
 use Filament\Resources\Pages\EditRecord;
-use Illuminate\Support\Facades\Hash;
 
 class EditCustomer extends EditRecord
 {
@@ -19,19 +18,26 @@ class EditCustomer extends EditRecord
         ];
     }
 
-    protected function mutateFormDataBeforeSave(array $data): array
+    protected function afterSave(): void
     {
-        if (isset($data['password']) && filled($data['password'])) {
-            $data['password'] = Hash::make($data['password']);
-        } else {
-            unset($data['password']);
-        }
+        // Kupon güncelleme
+        $couponId = $this->data['cart_coupon_id'] ?? null;
         
-        return $data;
+        $cart = $this->record->cart;
+        
+        if ($couponId) {
+            if (!$cart) {
+                $cart = $this->record->cart()->create([]);
+            }
+            $cart->update(['coupon_id' => $couponId]);
+        } elseif ($cart && $cart->coupon_id) {
+            // Kupon kaldırıldıysa
+            $cart->update(['coupon_id' => null]);
+        }
     }
 
     protected function getRedirectUrl(): string
     {
-        return $this->getResource()::getUrl('view', ['record' => $this->record]);
+        return $this->getResource()::getUrl('index');
     }
 }

@@ -2,23 +2,19 @@
 
 namespace App\Filament\Resources;
 
-use App\Enums\Admin\OrderPaymentStatusEnum;
-use App\Enums\Admin\OrderStatusEnum;
 use App\Filament\Resources\CustomerResource\Pages;
 use App\Filament\Resources\CustomerResource\RelationManagers;
+use App\Filament\Resources\InvoiceRelationManagerResource\RelationManagers\InvoicesRelationManager;
 use App\Models\Coupon;
 use App\Models\User;
+use Exception;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Grid;
+use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
-use Filament\Infolists\Components\Grid as InfoGrid;
-use Filament\Infolists\Components\RepeatableEntry;
-use Filament\Infolists\Components\Section as InfoSection;
-use Filament\Infolists\Components\TextEntry;
-use Filament\Infolists\Infolist;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Columns\TextColumn;
@@ -41,9 +37,10 @@ class CustomerResource extends Resource
     {
         return $form
             ->schema([
-                Section::make('Kişisel Bilgiler')
+                Grid::make(3)
                     ->schema([
-                        Grid::make(2)
+                        Section::make('Kişisel Bilgiler')
+                            ->icon('heroicon-o-user')
                             ->schema([
                                 TextInput::make('name')
                                     ->label('Ad')
@@ -53,9 +50,6 @@ class CustomerResource extends Resource
                                     ->label('Soyad')
                                     ->required()
                                     ->maxLength(255),
-                            ]),
-                        Grid::make(2)
-                            ->schema([
                                 TextInput::make('email')
                                     ->label('E-posta')
                                     ->email()
@@ -65,189 +59,121 @@ class CustomerResource extends Resource
                                 TextInput::make('phone')
                                     ->label('Telefon')
                                     ->tel()
+                                    ->mask('(999) 999 99 99')
                                     ->maxLength(20),
-                            ]),
-                    ]),
-                Section::make('Hesap Ayarları')
-                    ->schema([
-                        Grid::make(2)
-                            ->schema([
-                                TextInput::make('password')
-                                    ->label('Şifre')
-                                    ->password()
-                                    ->revealable()
-                                    ->required(fn (string $context): bool => $context === 'create')
-                                    ->dehydrated(fn ($state) => filled($state))
-                                    ->maxLength(255)
-                                    ->helperText('Düzenlerken boş bırakırsanız mevcut şifre korunur'),
-                                DateTimePicker::make('email_verified_at')
-                                    ->label('E-posta Doğrulama Tarihi')
-                                    ->nullable(),
-                            ]),
-                    ])
-                    ->collapsible(),
-            ]);
-    }
-
-    public static function infolist(Infolist $infolist): Infolist
-    {
-        return $infolist
-            ->schema([
-                InfoSection::make('Müşteri Bilgileri')
-                    ->schema([
-                        InfoGrid::make(3)
-                            ->schema([
-                                TextEntry::make('full_name')
-                                    ->label('Ad Soyad')
-                                    ->weight('bold'),
-                                TextEntry::make('email')
-                                    ->label('E-posta')
-                                    ->copyable(),
-                                TextEntry::make('phone')
-                                    ->label('Telefon')
-                                    ->placeholder('-'),
-                            ]),
-                        InfoGrid::make(3)
-                            ->schema([
-                                TextEntry::make('created_at')
-                                    ->label('Kayıt Tarihi')
-                                    ->dateTime('d.m.Y H:i'),
-                                TextEntry::make('email_verified_at')
-                                    ->label('E-posta Doğrulama')
-                                    ->dateTime('d.m.Y H:i')
-                                    ->placeholder('Doğrulanmadı')
-                                    ->color(fn ($state) => $state ? 'success' : 'danger'),
-                                TextEntry::make('orders_count')
-                                    ->label('Toplam Sipariş')
-                                    ->getStateUsing(fn ($record) => $record->orders()->count())
-                                    ->badge()
-                                    ->color('primary'),
-                            ]),
-                    ]),
-
-                InfoSection::make('Sipariş Geçmişi')
-                    ->schema([
-                        RepeatableEntry::make('orders')
-                            ->label('')
-                            ->schema([
-                                InfoGrid::make(5)
-                                    ->schema([
-                                        TextEntry::make('order_number')
-                                            ->label('Sipariş No')
-                                            ->weight('bold'),
-                                        TextEntry::make('total')
-                                            ->label('Tutar')
-                                            ->money('TRY'),
-                                        TextEntry::make('status')
-                                            ->label('Durum')
-                                            ->badge()
-                                            ->formatStateUsing(fn ($state) => $state->label())
-                                            ->color(fn ($state) => $state->color()),
-                                        TextEntry::make('payment_status')
-                                            ->label('Ödeme')
-                                            ->badge()
-                                            ->formatStateUsing(fn ($state) => $state->label())
-                                            ->color(fn ($state) => $state->color()),
-                                        TextEntry::make('created_at')
-                                            ->label('Tarih')
-                                            ->dateTime('d.m.Y'),
-                                    ]),
                             ])
-                            ->contained(false),
-                    ])
-                    ->collapsed()
-                    ->collapsible(),
+                            ->columnSpan(2),
 
-                InfoSection::make('Sepet İçeriği')
-                    ->schema([
-                        TextEntry::make('cart_info')
-                            ->label('')
-                            ->getStateUsing(function ($record) {
-                                $cart = $record->cart;
-                                if (!$cart || $cart->items->isEmpty()) {
-                                    return 'Sepet boş';
-                                }
-                                
-                                $items = $cart->items->map(function ($item) {
-                                    $name = $item->product->name ?? 'Ürün';
-                                    $qty = $item->quantity;
-                                    $total = number_format($item->total, 2, ',', '.') . ' ₺';
-                                    return "• {$name} x{$qty} = {$total}";
-                                })->join("\n");
-                                
-                                $subtotal = number_format($cart->subtotal, 2, ',', '.') . ' ₺';
-                                return $items . "\n\n**Toplam: {$subtotal}**";
-                            })
-                            ->markdown(),
-                    ])
-                    ->collapsed()
-                    ->collapsible(),
+                        Grid::make(1)
+                            ->schema([
+                                Section::make('Hesap')
+                                    ->icon('heroicon-o-lock-closed')
+                                    ->schema([
+                                        TextInput::make('password')
+                                            ->label('Şifre')
+                                            ->password()
+                                            ->revealable()
+                                            ->required(fn(string $context): bool => $context === 'create')
+                                            ->dehydrated(fn($state) => filled($state))
+                                            ->maxLength(255)
+                                            ->helperText(fn(string $context) => $context === 'edit'
+                                                ? 'Boş bırakırsanız mevcut şifre korunur'
+                                                : null),
+                                        DateTimePicker::make('email_verified_at')
+                                            ->label('E-posta Doğrulama')
+                                            ->native(false)
+                                            ->displayFormat('d.m.Y H:i')
+                                            ->format('Y-m-d H:i:s')
+                                            ->nullable(),
+                                    ]),
+
+                                Section::make('Kupon Ata')
+                                    ->icon('heroicon-o-ticket')
+                                    ->schema([
+                                        Select::make('cart_coupon_id')
+                                            ->label('Sepete Kupon Ekle')
+                                            ->options(Coupon::query()->active()->pluck('name', 'id'))
+                                            ->searchable()
+                                            ->preload()
+                                            ->placeholder('Kupon seçin...')
+                                            ->helperText('Müşterinin sepetine otomatik uygulanır')
+                                            ->dehydrated(false)
+                                            ->afterStateHydrated(function ($component, $record) {
+                                                if ($record && $record->cart) {
+                                                    $component->state($record->cart->coupon_id);
+                                                }
+                                            }),
+                                        Placeholder::make('coupon_note')
+                                            ->label('')
+                                            ->content('Kupon, müşteri sepetini görüntülediğinde aktif olacaktır.')
+                                            ->visible(fn(string $context) => $context === 'create'),
+                                    ])
+                                    ->collapsible()
+                                    ->collapsed(fn(string $context) => $context === 'create'),
+                            ])
+                            ->columnSpan(1),
+                    ]),
             ]);
     }
 
+    /**
+     * @throws Exception
+     */
     public static function table(Table $table): Table
     {
         return $table
             ->columns([
                 TextColumn::make('full_name')
-                    ->label('Ad Soyad')
-                    ->searchable(['name', 'surname'])
-                    ->sortable(['name']),
+                    ->label('Müşteri')
+                    ->searchable(['name', 'surname']),
                 TextColumn::make('email')
                     ->label('E-posta')
-                    ->searchable()
-                    ->copyable(),
+                    ->searchable(),
                 TextColumn::make('phone')
                     ->label('Telefon')
                     ->searchable()
-                    ->placeholder('-'),
+                    ->placeholder('-')
+                    ->toggleable(),
                 TextColumn::make('orders_count')
                     ->label('Sipariş')
                     ->counts('orders')
                     ->badge()
-                    ->color('primary'),
+                    ->tooltip('Toplam Şipariş')
+                    ->sortable()
+                    ->color('primary')
+                    ->alignCenter(),
                 TextColumn::make('orders_sum_total')
-                    ->label('Toplam Harcama')
+                    ->label('Harcama')
+                    ->tooltip('Toplam Harcama')
                     ->sum('orders', 'total')
-                    ->money('TRY'),
+                    ->money('TRY')
+                    ->sortable(),
+                Tables\Columns\IconColumn::make('email_verified_at')
+                    ->label('E-Posta Doğrulaması')
+                    ->boolean()
+                    ->alignCenter()
+                    ->getStateUsing(fn ($record) => ! is_null($record->email_verified_at))
+                    ->toggleable(isToggledHiddenByDefault: true),
+
                 TextColumn::make('created_at')
                     ->label('Kayıt')
                     ->dateTime('d.m.Y')
+                    ->toggleable(isToggledHiddenByDefault: true)
                     ->sortable(),
             ])
             ->defaultSort('created_at', 'desc')
             ->filters([
                 Tables\Filters\Filter::make('verified')
                     ->label('E-posta Doğrulanmış')
-                    ->query(fn (Builder $query) => $query->whereNotNull('email_verified_at')),
+                    ->query(fn(Builder $query) => $query->whereNotNull('email_verified_at')),
                 Tables\Filters\Filter::make('has_orders')
                     ->label('Sipariş Vermiş')
-                    ->query(fn (Builder $query) => $query->has('orders')),
+                    ->query(fn(Builder $query) => $query->has('orders')),
             ])
             ->actions([
-                Tables\Actions\ViewAction::make(),
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\Action::make('assign_coupon')
-                    ->label('Kupon Ata')
-                    ->icon('heroicon-o-ticket')
-                    ->color('success')
-                    ->form([
-                        Select::make('coupon_id')
-                            ->label('Kupon')
-                            ->options(Coupon::query()->active()->pluck('name', 'id'))
-                            ->searchable()
-                            ->preload()
-                            ->required()
-                            ->helperText('Müşterinin sepetine kupon atanacak'),
-                    ])
-                    ->action(function ($record, array $data) {
-                        $cart = $record->cart;
-                        if (!$cart) {
-                            $cart = $record->cart()->create([]);
-                        }
-                        $cart->update(['coupon_id' => $data['coupon_id']]);
-                    })
-                    ->successNotificationTitle('Kupon müşterinin sepetine atandı'),
+                Tables\Actions\ViewAction::make()->iconButton(),
+                Tables\Actions\EditAction::make()->iconButton(),
+                Tables\Actions\DeleteAction::make()->iconButton(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
@@ -260,7 +186,7 @@ class CustomerResource extends Resource
     {
         return [
             RelationManagers\OrdersRelationManager::class,
-            \App\Filament\Resources\InvoiceRelationManagerResource\RelationManagers\InvoicesRelationManager::class,
+            InvoicesRelationManager::class,
         ];
     }
 
@@ -279,8 +205,7 @@ class CustomerResource extends Resource
         return parent::getEloquentQuery()
             ->whereDoesntHave('roles', function ($q) {
                 $q->where('name', 'super_admin');
-            })
-            ->with(['orders', 'cart.items.product']);
+            });
     }
 
     public static function getNavigationBadge(): ?string
@@ -288,8 +213,4 @@ class CustomerResource extends Resource
         return static::getEloquentQuery()->count() ?: null;
     }
 
-    public static function getNavigationBadgeColor(): ?string
-    {
-        return 'info';
-    }
 }

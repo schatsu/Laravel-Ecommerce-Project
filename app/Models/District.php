@@ -8,7 +8,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class District extends Model
 {
-    use HasFactory;
 
     protected $fillable = [
         'city_id',

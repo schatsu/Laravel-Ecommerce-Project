@@ -18,10 +18,14 @@ class OrderItem extends Model
         'total',
     ];
 
-    protected $casts = [
-        'unit_price' => 'decimal:2',
-        'total' => 'decimal:2',
-    ];
+
+    protected function casts(): array
+    {
+        return [
+            'unit_price' => 'decimal:2',
+            'total' => 'decimal:2',
+        ];
+    }
 
     public function order(): BelongsTo
     {
@@ -42,8 +46,8 @@ class OrderItem extends Model
     {
         if ($this->variation) {
             // Önce preloadedOptions'ı kontrol et (N+1 query çözümü için)
-            $options = $this->relationLoaded('preloadedOptions') 
-                ? $this->getRelation('preloadedOptions') 
+            $options = $this->relationLoaded('preloadedOptions')
+                ? $this->getRelation('preloadedOptions')
                 : $this->variation->selectedOptions();
 
             foreach ($options as $option) {

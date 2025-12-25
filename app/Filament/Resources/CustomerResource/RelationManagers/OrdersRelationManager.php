@@ -16,8 +16,14 @@ class OrdersRelationManager extends RelationManager
     protected static string $relationship = 'orders';
 
     protected static ?string $title = 'Siparişler';
+
+    protected static ?string $pluralModelLabel = 'Sipariş';
+    protected static ?string $label = 'Siparişler';
     protected static ?string $recordTitleAttribute = 'order_number';
 
+    /**
+     * @throws \Exception
+     */
     public function table(Table $table): Table
     {
         return $table

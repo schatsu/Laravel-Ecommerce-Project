@@ -31,16 +31,20 @@ class Order extends Model
         'coupon_id',
     ];
 
-    protected $casts = [
-        'billing_address' => 'array',
-        'shipping_address' => 'array',
-        'subtotal' => 'decimal:2',
-        'shipping_cost' => 'decimal:2',
-        'discount_amount' => 'decimal:2',
-        'total' => 'decimal:2',
-        'status' => OrderStatusEnum::class,
-        'payment_status' => OrderPaymentStatusEnum::class,
-    ];
+
+    protected function casts(): array
+    {
+        return [
+            'billing_address' => 'array',
+            'shipping_address' => 'array',
+            'subtotal' => 'decimal:2',
+            'shipping_cost' => 'decimal:2',
+            'discount_amount' => 'decimal:2',
+            'total' => 'decimal:2',
+            'status' => OrderStatusEnum::class,
+            'payment_status' => OrderPaymentStatusEnum::class,
+        ];
+    }
 
     public function user(): BelongsTo
     {
