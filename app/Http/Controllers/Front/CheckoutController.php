@@ -198,7 +198,6 @@ class CheckoutController extends Controller
     public function success(string $hashId): View
     {
         $order = Order::query()
-            ->whereRelation('user', 'id', auth()->id())
             ->findByHashidOrFail($hashId);
 
         $order->load(['items.product.media', 'items.variation']);

@@ -53,14 +53,15 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/form/{order}', [CheckoutController::class, 'paymentForm'])->name('payment-form');
         Route::post('/pay', [CheckoutController::class, 'pay'])->name('pay');
         Route::get('/installments/{bin}/{price}', [CheckoutController::class, 'getInstallments'])->name('installments');
-        Route::get('/basarili/{order}', [CheckoutController::class, 'success'])->name('success');
-        Route::get('/basarisiz', [CheckoutController::class, 'fail'])->name('fail');
     });
 
     Route::post('cikis', [LoginController::class, 'logout'])->name('logout');
 });
 
+// 3D Callback ve sonuç sayfaları - auth dışında
 Route::post('/odeme/3d-callback', [CheckoutController::class, 'threeDCallback'])->name('checkout.3d-callback');
+Route::get('/odeme/basarili/{order}', [CheckoutController::class, 'success'])->name('checkout.success');
+Route::get('/odeme/basarisiz', [CheckoutController::class, 'fail'])->name('checkout.fail');
 
 Route::get('/', HomeController::class)->name('home');
 Route::get('kategoriler', [CategoryController::class, 'index'])->name('category.index');

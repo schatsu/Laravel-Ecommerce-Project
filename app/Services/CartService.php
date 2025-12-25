@@ -85,6 +85,15 @@ class CartService
         return $cart->items()->delete() > 0;
     }
 
+    public function clearByUserId(int $userId): bool
+    {
+        $cart = Cart::query()->where('user_id', $userId)->first();
+        if ($cart) {
+            return $cart->items()->delete() > 0;
+        }
+        return false;
+    }
+
     public function getItemCount(): int
     {
         return $this->getCart()->item_count;

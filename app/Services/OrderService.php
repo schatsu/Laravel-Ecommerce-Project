@@ -75,7 +75,8 @@ class OrderService
             'iyzico_payment_id' => $paymentId,
         ]);
 
-        $this->cartService->clear();
+        // Kullanıcının sepetini temizle (session bağımlı olmadan)
+        $this->cartService->clearByUserId($order->user_id);
 
         return $order->fresh();
     }
