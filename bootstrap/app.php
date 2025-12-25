@@ -20,6 +20,7 @@ return Application::configure(basePath: dirname(__DIR__))
         
         $middleware->validateCsrfTokens(except: [
             'odeme/callback',
+            'odeme/3d-callback',
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
