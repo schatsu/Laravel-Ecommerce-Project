@@ -131,8 +131,6 @@ class CheckoutController extends Controller
             ->whereRelation('user', 'id', $user?->id)
             ->findOrFail($request->order_id);
 
-        $user = auth()->user();
-
         $expireParts = explode('/', $request->expire_date);
         $cardData = [
             'card_number' => $request->card_number,
@@ -145,23 +143,54 @@ class CheckoutController extends Controller
         $billingAddress = session('checkout.billing_address', []);
         $shippingAddress = session('checkout.shipping_address', []);
 
-        $result = $this->iyzicoService->create3DSecurePayment(
-            $order,
-            $user,
-            $cardData,
-            $billingAddress,
-            $shippingAddress,
-            $request->installment ?? 1
-        );
+        $use3DSecure = $request->has('use_3d_secure');
 
-        if ($result->getStatus() !== 'success') {
+        if ($use3DSecure) {
+            // 3D Secure ödeme
+            $result = $this->iyzicoService->create3DSecurePayment(
+                $order,
+                $user,
+                $cardData,
+                $billingAddress,
+                $shippingAddress,
+                $request->installment ?? 1
+            );
+
+            if ($result->getStatus() !== 'success') {
+                return redirect()->route('checkout.payment-form', $order->hashid())
+                    ->with('error', $result->getErrorMessage() ?? 'Ödeme başlatılamadı.');
+            }
+
+            return view('app.checkout.3d-redirect', [
+                'htmlContent' => $result->getHtmlContent(),
+            ]);
+        } else {
+            // Doğrudan ödeme (3D'siz)
+            $result = $this->iyzicoService->createDirectPayment(
+                $order,
+                $user,
+                $cardData,
+                $billingAddress,
+                $shippingAddress,
+                $request->installment ?? 1
+            );
+
+            \Log::info('Direct payment result', [
+                'status' => $result->getStatus(),
+                'paymentStatus' => $result->getPaymentStatus(),
+                'errorCode' => $result->getErrorCode(),
+                'errorMessage' => $result->getErrorMessage(),
+            ]);
+
+            if ($this->iyzicoService->isPaymentSuccessful($result)) {
+                $this->orderService->markAsPaid($order, $result->getPaymentId());
+                return redirect()->route('checkout.success', $order->hashid());
+            }
+
+            $this->orderService->markAsFailed($order);
             return redirect()->route('checkout.payment-form', $order->hashid())
-                ->with('error', $result->getErrorMessage() ?? 'Ödeme başlatılamadı.');
+                ->with('error', $result->getErrorMessage() ?? 'Ödeme başarısız.');
         }
-
-        return view('app.checkout.3d-redirect', [
-            'htmlContent' => $result->getHtmlContent(),
-        ]);
     }
 
 

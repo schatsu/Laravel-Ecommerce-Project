@@ -169,6 +169,16 @@
                                 </div>
                             </div>
 
+                            <div class="mb-4">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="use_3d_secure" id="use-3d-secure" value="1" checked>
+                                    <label class="form-check-label" for="use-3d-secure">
+                                        <span class="fw-medium">3D Secure ile öde</span>
+                                        <small class="d-block text-secondary">Ekstra güvenlik için önerilir</small>
+                                    </label>
+                                </div>
+                            </div>
+
                             <div class="alert alert-danger" id="payment-error" style="display: none;"></div>
 
                             <button type="submit" class="btn-checkout w-100 mt-3" id="pay-button">
