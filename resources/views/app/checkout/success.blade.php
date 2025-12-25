@@ -236,7 +236,6 @@
         <div class="container">
             <div class="row justify-content-center">
                 <div class="col-lg-7">
-                    {{-- Success Header --}}
                     <div class="text-center mb-5">
                         <div class="success-icon">
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
@@ -247,7 +246,6 @@
                         <p class="success-subtitle">Teşekkür ederiz. Siparişiniz başarıyla oluşturuldu.</p>
                     </div>
 
-                    {{-- Order Info Card --}}
                     <div class="order-info-card">
                         <div class="order-info-row">
                             <span class="order-info-label">Sipariş Numarası</span>
@@ -263,7 +261,6 @@
                         </div>
                     </div>
 
-                    {{-- Order Items Card --}}
                     <div class="order-items-card">
                         <h3 class="section-title">Sipariş Detayları</h3>
 
@@ -305,13 +302,11 @@
                         </div>
                     </div>
 
-                    {{-- Delivery Address --}}
                     <div class="address-card">
                         <h4 class="address-title">
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16" class="me-2">
                                 <path d="M8 16s6-5.686 6-10A6 6 0 0 0 2 6c0 4.314 6 10 6 10zm0-7a3 3 0 1 1 0-6 3 3 0 0 1 0 6z"/>
                             </svg>
-                            Teslimat Adresi
                         </h4>
                         <p class="address-text mb-0">
                             <strong>{{ $order->shipping_address['first_name'] ?? '' }} {{ $order->shipping_address['last_name'] ?? '' }}</strong><br>
@@ -320,9 +315,8 @@
                         </p>
                     </div>
 
-                    {{-- Action Buttons --}}
                     <div class="action-buttons">
-                        <a href="{{ route('account.orders') }}" class="btn-secondary-custom">
+                        <a href="{{ route('account.orders.index') }}" class="btn-secondary-custom">
                             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
                             </svg>
