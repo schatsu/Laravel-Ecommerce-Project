@@ -159,7 +159,6 @@ class IyzicoService
      */
     public function isPaymentSuccessful($result): bool
     {
-        return $result->getStatus() === 'success' 
-            && ($result->getPaymentStatus() === 'SUCCESS' || $result->getMdStatus() == 1);
+        return $result->getStatus() === 'success' && $result->getPaymentStatus() === 'SUCCESS';
     }
 }
