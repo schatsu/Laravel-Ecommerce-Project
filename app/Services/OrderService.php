@@ -8,6 +8,7 @@ use App\Models\Cart;
 use App\Models\Order;
 use App\Models\OrderItem;
 use Illuminate\Support\Facades\DB;
+use Throwable;
 
 class OrderService
 {
@@ -15,20 +16,26 @@ class OrderService
         private readonly CartService $cartService
     ) {}
 
+    /**
+     * @throws Throwable
+     */
     public function createFromCart(Cart $cart, array $billingAddress, array $shippingAddress = null, float $shippingCost = 0): Order
     {
         return DB::transaction(function () use ($cart, $billingAddress, $shippingAddress, $shippingCost) {
-            $cart->load('items.product', 'items.variation');
+            $cart->load('items.product', 'items.variation', 'coupon');
 
             $subtotal = $cart->subtotal;
-            $total = $subtotal + $shippingCost;
+            $discountAmount = $cart->discount_amount ?? 0;
+            $total = $subtotal - $discountAmount + $shippingCost;
 
-            $order = Order::create([
+            $order = Order::query()->create([
                 'user_id' => $cart->user_id,
                 'order_number' => Order::generateOrderNumber(),
                 'status' => OrderStatusEnum::PENDING,
                 'subtotal' => $subtotal,
                 'shipping_cost' => $shippingCost,
+                'discount_amount' => $discountAmount,
+                'coupon_id' => $cart->coupon_id,
                 'total' => $total,
                 'billing_address' => $billingAddress,
                 'shipping_address' => $shippingAddress ?? $billingAddress,
@@ -44,7 +51,7 @@ class OrderService
                     $variationInfo = $options->map(fn($opt) => $opt->name)->implode(', ');
                 }
 
-                OrderItem::create([
+                OrderItem::query()->create([
                     'order_id' => $order->id,
                     'product_id' => $item->product_id,
                     'product_variation_id' => $item->product_variation_id,
@@ -68,7 +75,6 @@ class OrderService
             'iyzico_payment_id' => $paymentId,
         ]);
 
-        // Sepeti temizle
         $this->cartService->clear();
 
         return $order->fresh();

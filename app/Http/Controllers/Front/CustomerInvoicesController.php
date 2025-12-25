@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Front;
 
 
+use App\Enums\AddressType;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Front\StoreInvoiceRequest;
 use App\Http\Requests\Front\UpdateAddressRequest;
@@ -10,6 +11,7 @@ use App\Models\Country;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
 use Illuminate\Foundation\Application;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Throwable;
@@ -50,6 +52,62 @@ class CustomerInvoicesController extends Controller
         $user->invoices()->create($attributes->toArray());
 
         return redirect()->route('account.address')->with('toast_success', 'Adres başarıyla kaydedildi.');
+    }
+
+    /**
+     * Store via AJAX (from checkout modal)
+     */
+    public function storeAjax(Request $request): JsonResponse
+    {
+        $validated = $request->validate([
+            'type' => 'required|in:delivery,billing',
+            'name' => 'required|string|max:255',
+            'surname' => 'required|string|max:255',
+            'phone' => 'required|string|max:20',
+            'address' => 'required|string',
+            'country_id' => 'required|exists:countries,id',
+            'city_id' => 'required|exists:cities,id',
+            'district_id' => 'required|exists:districts,id',
+            'identity_number' => 'nullable|string|max:11',
+            'company_type' => 'nullable|in:individual,corporate',
+            'company_name' => 'nullable|string|max:255',
+            'tax_number' => 'nullable|string|max:50',
+            'tax_office' => 'nullable|string|max:255',
+            'default_delivery' => 'nullable|boolean',
+            'default_billing' => 'nullable|boolean',
+        ]);
+
+        $user = auth()->user();
+        $type = AddressType::from($validated['type']);
+
+        if (!empty($validated['default_delivery'])) {
+            $user->invoices()->update(['default_delivery' => false]);
+        }
+        if (!empty($validated['default_billing'])) {
+            $user->invoices()->update(['default_billing' => false]);
+        }
+
+        if ($user->invoices()->count() === 0) {
+            $validated['default_delivery'] = true;
+            $validated['default_billing'] = true;
+        }
+
+        $invoice = $user->invoices()->create($validated);
+        $invoice->load('country', 'city', 'district');
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Adres başarıyla eklendi.',
+            'data' => [
+                'id' => $invoice->id,
+                'full_name' => $invoice->full_name,
+                'full_address' => $invoice->full_address,
+                'phone' => $invoice->phone,
+                'type' => $invoice->type->value,
+                'default_delivery' => $invoice->default_delivery,
+                'default_billing' => $invoice->default_billing,
+            ],
+        ]);
     }
 
     /**

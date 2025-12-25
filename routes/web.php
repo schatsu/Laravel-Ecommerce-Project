@@ -42,12 +42,17 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/toggle/{slug}', [FavoriteController::class, 'toggle'])->name('favorite.toggle');
         Route::get('/siparislerim', [OrderController::class, 'index'])->name('orders.index');
         Route::get('/siparislerim/{order}', [OrderController::class, 'show'])->name('orders.show');
+        Route::get('/kuponlarim', [UserProfileController::class, 'coupons'])->name('coupons');
+        Route::post('/adres/ajax', [CustomerInvoicesController::class, 'storeAjax'])->name('address.storeAjax');
     });
 
     // Checkout Routes
     Route::prefix('odeme')->as('checkout.')->group(function () {
         Route::get('/', [CheckoutController::class, 'index'])->name('index');
         Route::post('/process', [CheckoutController::class, 'process'])->name('process');
+        Route::get('/form/{order}', [CheckoutController::class, 'paymentForm'])->name('payment-form');
+        Route::post('/pay', [CheckoutController::class, 'pay'])->name('pay');
+        Route::get('/installments/{bin}/{price}', [CheckoutController::class, 'getInstallments'])->name('installments');
         Route::get('/basarili/{order}', [CheckoutController::class, 'success'])->name('success');
         Route::get('/basarisiz', [CheckoutController::class, 'fail'])->name('fail');
     });
@@ -55,7 +60,7 @@ Route::middleware(['auth'])->group(function () {
     Route::post('cikis', [LoginController::class, 'logout'])->name('logout');
 });
 
-Route::post('/odeme/callback', [CheckoutController::class, 'callback'])->name('checkout.callback');
+Route::post('/odeme/3d-callback', [CheckoutController::class, 'threeDCallback'])->name('checkout.3d-callback');
 
 Route::get('/', HomeController::class)->name('home');
 Route::get('kategoriler', [CategoryController::class, 'index'])->name('category.index');

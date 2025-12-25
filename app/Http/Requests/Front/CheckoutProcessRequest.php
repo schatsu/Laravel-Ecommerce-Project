@@ -14,15 +14,18 @@ class CheckoutProcessRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'address_id' => ['required', 'exists:invoices,id'],
+            'delivery_address_id' => ['required', 'exists:invoices,id'],
+            'billing_address_id' => ['nullable', 'exists:invoices,id'],
+            'same_as_delivery_hidden' => ['nullable', 'in:0,1'],
         ];
     }
 
     public function messages(): array
     {
         return [
-            'address_id.required' => 'Lütfen bir teslimat adresi seçin.',
-            'address_id.exists' => 'Seçilen adres bulunamadı.',
+            'delivery_address_id.required' => 'Lütfen bir teslimat adresi seçin.',
+            'delivery_address_id.exists' => 'Seçilen teslimat adresi bulunamadı.',
+            'billing_address_id.exists' => 'Seçilen fatura adresi bulunamadı.',
         ];
     }
 }

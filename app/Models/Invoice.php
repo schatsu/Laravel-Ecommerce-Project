@@ -2,7 +2,9 @@
 
 namespace App\Models;
 
+use App\Enums\AddressType;
 use App\Enums\Admin\InvoiceCompanyTypeEnum;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Spatie\Sluggable\HasSlug;
@@ -15,6 +17,7 @@ class Invoice extends Model
     protected $fillable = [
         'user_id',
         'order_id',
+        'type',
         'name',
         'surname',
         'slug',
@@ -29,6 +32,8 @@ class Invoice extends Model
         'tax_number',
         'tax_office',
         'default_invoice',
+        'default_delivery',
+        'default_billing',
     ];
 
     public function getSlugOptions(): SlugOptions
@@ -41,11 +46,36 @@ class Invoice extends Model
     protected function casts(): array
     {
         return [
+            'type' => AddressType::class,
             'company_type' => InvoiceCompanyTypeEnum::class,
             'default_invoice' => 'boolean',
+            'default_delivery' => 'boolean',
+            'default_billing' => 'boolean',
         ];
     }
 
+    // Scopes
+    public function scopeDelivery(Builder $query): Builder
+    {
+        return $query->where('type', AddressType::DELIVERY);
+    }
+
+    public function scopeBilling(Builder $query): Builder
+    {
+        return $query->where('type', AddressType::BILLING);
+    }
+
+    public function scopeDefaultDelivery(Builder $query): Builder
+    {
+        return $query->where('default_delivery', true);
+    }
+
+    public function scopeDefaultBilling(Builder $query): Builder
+    {
+        return $query->where('default_billing', true);
+    }
+
+    // Relationships
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
@@ -69,5 +99,20 @@ class Invoice extends Model
     public function district(): BelongsTo
     {
         return $this->belongsTo(District::class);
+    }
+
+    public function getFullAddressAttribute(): string
+    {
+        return implode(', ', array_filter([
+            $this->address,
+            $this->district?->name,
+            $this->city?->name,
+            $this->country?->name,
+        ]));
+    }
+
+    public function getFullNameAttribute(): string
+    {
+        return trim($this->name . ' ' . $this->surname);
     }
 }

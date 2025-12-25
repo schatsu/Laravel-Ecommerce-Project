@@ -8,6 +8,7 @@ use App\Http\Resources\CityResource;
 use App\Http\Resources\DistrictResource;
 use App\Models\City;
 use App\Models\Country;
+use App\Models\CouponUsage;
 use App\Models\District;
 use App\Models\User;
 use Illuminate\Contracts\View\Factory;
@@ -66,5 +67,27 @@ class UserProfileController extends Controller
         $user->update($attributes->toArray());
 
         return redirect()->back()->with('toast_success', 'Hesap bilgileriniz başarıyla güncellendi.');
+    }
+
+    public function coupons(): Factory|Application|View
+    {
+        /** @var User $user */
+        $user = auth()->user();
+
+        $activeCoupon = null;
+        if ($user->cart && $user->cart->coupon) {
+            $coupon = $user->cart->coupon;
+            if ($coupon->isValidForUser($user->id)) {
+                $activeCoupon = $coupon;
+            }
+        }
+
+        $usedCoupons = CouponUsage::query()
+            ->with('coupon', 'order')
+            ->where('user_id', $user->id)
+            ->latest()
+            ->get();
+
+        return view('app.account.coupons', compact('user', 'activeCoupon', 'usedCoupons'));
     }
 }
