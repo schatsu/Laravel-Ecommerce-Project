@@ -35,13 +35,21 @@ class VariationTypeOption extends Model implements HasMedia
             ->saveSlugsTo('slug');
     }
 
-    public function registerMediaConversions(Media $media = null): void
+    public function registerMediaConversions(?Media $media = null): void
     {
         $this->addMediaConversion('thumb')
-            ->width(100);
+            ->width(100)
+            ->nonQueued()
+            ->performOnCollections('images');
+
         $this->addMediaConversion('small')
-            ->width(480);
+            ->width(480)
+            ->nonQueued()
+            ->performOnCollections('images');
+
         $this->addMediaConversion('large')
-            ->width(1200);
+            ->width(1200)
+            ->nonQueued()
+            ->performOnCollections('images');
     }
 }

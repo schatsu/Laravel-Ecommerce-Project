@@ -24,7 +24,7 @@ enum OrderStatusEnum: string
     public function color(): string
     {
         return match($this) {
-            self::PENDING => 'secondary',
+            self::PENDING => 'warning',
             self::PROCESSING => 'primary',
             self::SHIPPED => 'info',
             self::DELIVERED => 'success',

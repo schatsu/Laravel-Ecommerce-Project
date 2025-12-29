@@ -81,8 +81,11 @@ class ProductResource extends Resource
                                     ->label('Ürün Açıklaması')
                                     ->required()
                                     ->toolbarButtons([
-                                        'blockquote', 'bold', 'bulletList', 'h2', 'h3', 'italic', 'underline',
-                                        'orderedList', 'redo', 'strike', 'undo', 'table',
+                                        'bold', 'italic', 'underline', 'strike', 'subscript', 'superscript', 'link',
+                                        'h1','h2', 'h3', 'alignStart', 'alignCenter', 'alignEnd',
+                                        'blockquote', 'codeBlock', 'bulletList', 'orderedList',
+                                        'table', 'attachFiles',
+                                        'undo', 'redo',
                                     ]),
                                 Section::make('Ürün Görselleri')
                                     ->description('Ana ürün görsellerini buraya yükleyin')
@@ -126,6 +129,23 @@ class ProductResource extends Resource
                                                     ->helperText('Boş bırakırsanız indirim uygulanmaz'),
                                             ]),
                                     ]),
+                                Section::make('Stok Bilgileri')
+                                    ->description('Basit ürünler için stok bilgilerini girin')
+                                    ->schema([
+                                        Grid::make(2)
+                                            ->schema([
+                                                TextInput::make('sku')
+                                                    ->label('Stok Kodu (SKU)')
+                                                    ->nullable()
+                                                    ->maxLength(100),
+                                                TextInput::make('stock_quantity')
+                                                    ->label('Stok Adeti')
+                                                    ->numeric()
+                                                    ->default(0)
+                                                    ->nullable(),
+                                            ]),
+                                    ])
+                                    ->visible(fn ($livewire) => ($livewire->type ?? 'simple') === 'simple'),
                                 Section::make('Ürün Ayarları')
                                     ->schema([
                                         Grid::make(3)
@@ -145,6 +165,7 @@ class ProductResource extends Resource
 
                         Tab::make('Varyantlar')
                             ->icon('heroicon-o-squares-plus')
+                            ->visible(fn ($livewire) => ($livewire->type ?? 'simple') === 'variable')
                             ->schema([
                                 Section::make('Varyant Özellikleri')
                                     ->description('Renk, beden, kapasite gibi varyant tiplerini tanımlayın')

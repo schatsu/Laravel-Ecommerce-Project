@@ -1,5 +1,7 @@
 <?php
 
+use App\Models\Coupon;
+use App\Models\User;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -10,11 +12,13 @@ return new class extends Migration
     {
         Schema::create('orders', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained()->cascadeOnDelete();
+            $table->foreignIdFor(User::class)->constrained()->cascadeOnDelete();
+            $table->foreignIdFor(Coupon::class)->nullable()->constrained()->nullOnDelete();
             $table->string('order_number')->unique();
             $table->string('status')->default('pending');
             $table->decimal('subtotal', 10, 2);
             $table->decimal('shipping_cost', 10, 2)->default(0);
+            $table->decimal('discount_amount', 10, 2)->default(0);
             $table->decimal('total', 10, 2);
             $table->json('billing_address');
             $table->json('shipping_address')->nullable();

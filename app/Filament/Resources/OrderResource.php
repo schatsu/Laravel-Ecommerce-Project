@@ -93,11 +93,14 @@ class OrderResource extends Resource
                                 TextEntry::make('status')
                                     ->label('Sipariş Durumu')
                                     ->badge()
-                                    ->color(fn($state) => $state->color()),
+                                    ->color(fn($state) => $state->color())
+                                    ->formatStateUsing(fn($state) => $state->label()),
+
                                 TextEntry::make('payment_status')
                                     ->label('Ödeme Durumu')
                                     ->badge()
-                                    ->color(fn($state) => $state->color()),
+                                    ->color(fn($state) => $state->color())
+                                    ->formatStateUsing(fn($state) => $state->label()),
                             ]),
                     ]),
 
@@ -174,8 +177,7 @@ class OrderResource extends Resource
                                                    ($addr['city'] ?? '');
                                         }),
                                     TextEntry::make('billing_address.phone')
-                                        ->label('Telefon')
-                                        ->icon('heroicon-o-phone'),
+                                        ->label('Telefon'),
                                 ]),
                                 Group::make([
                                     TextEntry::make('shipping_address.name')
@@ -191,8 +193,7 @@ class OrderResource extends Resource
                                                    ($addr['city'] ?? '');
                                         }),
                                     TextEntry::make('shipping_address.phone')
-                                        ->label('Telefon')
-                                        ->icon('heroicon-o-phone'),
+                                        ->label('Telefon'),
                                 ]),
                             ]),
                     ])

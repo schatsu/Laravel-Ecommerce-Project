@@ -22,7 +22,7 @@ enum OrderPaymentStatusEnum: string
     public function color(): string
     {
         return match($this) {
-            self::PENDING => 'secondary',
+            self::PENDING => 'warning',
             self::PAID => 'success',
             self::FAILED => 'danger',
             self::REFUNDED => 'dark',

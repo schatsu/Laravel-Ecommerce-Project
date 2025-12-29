@@ -1,5 +1,7 @@
 <?php
 
+use App\Models\Coupon;
+use App\Models\User;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -10,11 +12,11 @@ return new class extends Migration
     {
         Schema::create('carts', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->nullable()->constrained()->cascadeOnDelete();
+            $table->foreignIdFor(User::class)->nullable()->constrained()->cascadeOnDelete();
+            $table->foreignIdFor(Coupon::class)->nullable()->constrained()->nullOnDelete();
             $table->string('session_id')->nullable()->index();
             $table->timestamps();
 
-            // Bir kullanıcının tek sepeti olabilir
             $table->unique('user_id');
         });
     }

@@ -9,7 +9,7 @@ use Illuminate\Database\Schema\Blueprint;
 class CreateAcquaintancesFriendshipsGroupsTable extends Migration
 {
 
-    public function up()
+    public function up(): void
     {
 
         Schema::create(config('acquaintances.tables.friendship_groups'), function (Blueprint $table) {
@@ -30,7 +30,7 @@ class CreateAcquaintancesFriendshipsGroupsTable extends Migration
 
     }
 
-    public function down()
+    public function down(): void
     {
         Schema::dropIfExists(config('acquaintances.tables.friendship_groups'));
     }

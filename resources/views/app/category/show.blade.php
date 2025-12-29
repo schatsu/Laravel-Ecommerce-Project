@@ -264,9 +264,9 @@
                             <div class="widget-price filter-price">
                                 <div class="price-val-range" id="price-value-range"
                                      data-min="0"
-                                     data-max="100000"
+                                     data-max="{{$products?->max('selling_price')}}"
                                      data-current-min="{{ request('price_min', 0) }}"
-                                     data-current-max="{{ request('price_max', 100000) }}"></div>
+                                     data-current-max="{{ request('price_max', $products->max('selling_price')) }}"></div>
                                 <div class="box-title-price">
                                     <span class="title-price">Fiyat:</span>
                                     <div class="caption-price">
@@ -274,13 +274,13 @@
                                              data-currency="₺">{{ request('price_min', 0) }}</div>
                                         <span>-</span>
                                         <div class="price-val" id="price-max-value"
-                                             data-currency="₺">{{ request('price_max', 100000) }}</div>
+                                             data-currency="₺">{{ request('price_max', $products->max('selling_price')) }}</div>
                                     </div>
                                 </div>
                                 <input type="hidden" name="price_min" id="price-min-input"
-                                       value="{{ request('price_min') }}">
+                                       value="{{ request('selling_price') }}">
                                 <input type="hidden" name="price_max" id="price-max-input"
-                                       value="{{ request('price_max') }}">
+                                       value="{{ request('selling_price') }}">
                             </div>
                         </div>
                     </div>
@@ -958,7 +958,7 @@
 
                 let $btn = $(this);
                 let slug = $btn.data('slug');
-                
+
                 // Modal wishlist için slug'ı modal'dan al
                 if (!slug && $btn.hasClass('modal-wishlist')) {
                     let $modal = $btn.closest('.modal');

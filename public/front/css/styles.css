@@ -14182,7 +14182,7 @@ html:not([dir=rtl]) .noUi-horizontal .noUi-handle {
 }
 
 .widget-price .caption-price .price-val {
-  width: 68px;
+  width: 90px;
   display: flex;
   justify-content: flex-end;
   position: relative;

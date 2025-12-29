@@ -18,48 +18,41 @@ class CategorySeeder extends Seeder
         collect([
             [
                 'name' => 'Yüzük',
-                'description' => 'Discover the latest trends and newest products.',
+                'description' => 'El işçiliğiyle üretilen zarif gümüş yüzükler. Nişan yüzükleri, alyanslar ve günlük kullanım için şık tasarımlar.',
                 'status' => CategoryStatusEnum::ACTIVE,
                 'order' => 1,
+                'image' => 'https://placehold.co/400x400/e8e8e8/555555?text=Yuzuk',
             ],
             [
                 'name' => 'Kolye',
-                'description' => 'Top-selling items our customers love.',
+                'description' => 'Özel tasarım gümüş kolyeler. İnce zincirler, taşlı kolyeler ve kişiye özel hediye seçenekleri.',
                 'status' => CategoryStatusEnum::ACTIVE,
                 'order' => 2,
+                'image' => 'https://placehold.co/400x400/e8e8e8/555555?text=Kolye',
             ],
             [
                 'name' => 'Küpe',
-                'description' => 'Highly rated products by our users.',
+                'description' => 'Şık ve modern gümüş küpeler. Halka küpeler, sallanan küpeler ve günlük kullanıma uygun tasarımlar.',
                 'status' => CategoryStatusEnum::ACTIVE,
                 'order' => 3,
-            ],
-            [
-                'name' => 'Mini Set',
-                'description' => 'Selected brands that our team recommends.',
-                'status' => CategoryStatusEnum::ACTIVE,
-                'order' => 4,
-            ],
-            [
-                'name' => 'Trending',
-                'description' => 'What’s hot right now in our collection.',
-                'status' => CategoryStatusEnum::ACTIVE,
-                'order' => 5,
+                'image' => 'https://placehold.co/400x400/e8e8e8/555555?text=Kupe',
             ],
             [
                 'name' => 'Bileklik',
-                'description' => 'Classic styles with a modern twist.',
+                'description' => 'El yapımı gümüş bileklikler. Kelepçe bileklikler, zincir bileklikler ve charm bileklikler.',
                 'status' => CategoryStatusEnum::ACTIVE,
-                'order' => 6,
+                'order' => 4,
+                'image' => 'https://placehold.co/400x400/e8e8e8/555555?text=Bileklik',
             ],
             [
-                'name' => 'Su Yolu Set',
-                'description' => 'Enjoy great discounts on selected items.',
-                'status' => CategoryStatusEnum::PASSIVE,
-                'order' => 7,
+                'name' => 'Set',
+                'description' => 'Uyumlu gümüş takı setleri. Kolye-Küpe setleri, düğün setleri ve hediye paketleri.',
+                'status' => CategoryStatusEnum::ACTIVE,
+                'order' => 5,
+                'image' => 'https://placehold.co/400x400/e8e8e8/555555?text=Set',
             ],
         ])->each(function ($data) {
-            Category::query()->create([
+            $category = Category::query()->create([
                 'name' => $data['name'],
                 'slug' => Str::slug($data['name']),
                 'description' => $data['description'],
@@ -67,6 +60,10 @@ class CategorySeeder extends Seeder
                 'parent_id' => null,
                 'order' => $data['order'],
             ]);
+
+            // Add category image using Spatie Media Library
+            $category->addMediaFromUrl($data['image'])
+                ->toMediaCollection('featured_cover');
         });
     }
 }

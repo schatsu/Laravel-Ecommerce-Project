@@ -10,7 +10,7 @@ class CreateAcquaintancesInteractionsTable extends Migration
     /**
      * Run the migrations.
      */
-    public function up()
+    public function up(): void
     {
         Schema::create(config('acquaintances.tables.interactions', 'interactions'), function (Blueprint $table) {
             $table->id();
@@ -39,7 +39,7 @@ class CreateAcquaintancesInteractionsTable extends Migration
     /**
      * Reverse the migrations.
      */
-    public function down()
+    public function down(): void
     {
         Schema::table(config('acquaintances.tables.interactions', 'interactions'), function ($table) {
             $table->dropForeign(config('acquaintances.tables.interactions', 'interactions').'_user_id_foreign');

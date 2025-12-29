@@ -43,6 +43,10 @@ class ProductController extends Controller
 
         $availableOptionsByType = $this->productViewService->calculateAvailableOptionsByType($product, $selectedOptionIds);
 
+        $shareUrl = route('product.show', ['slug' => $product?->slug]);
+        $shareTitle = $product->name;
+        $shareText = $product->short_description ?? $product->name;
+
         return view('app.product.show', [
             'product' => $product,
             'selectedVariation' => $selectedVariation,
@@ -53,6 +57,9 @@ class ProductController extends Controller
             'hasStock' => $pricing['hasStock'],
             'galleryImages' => $galleryImages,
             'availableOptionsByType' => $availableOptionsByType,
+            'shareUrl' => $shareUrl,
+            'shareTitle' => $shareTitle,
+            'shareText' => $shareText,
         ]);
     }
 

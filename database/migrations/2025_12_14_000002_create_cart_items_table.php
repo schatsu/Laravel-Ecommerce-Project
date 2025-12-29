@@ -1,5 +1,8 @@
 <?php
 
+use App\Models\Cart;
+use App\Models\Product;
+use App\Models\ProductVariation;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -10,14 +13,13 @@ return new class extends Migration
     {
         Schema::create('cart_items', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('cart_id')->constrained()->cascadeOnDelete();
-            $table->foreignId('product_id')->constrained()->cascadeOnDelete();
-            $table->foreignId('product_variation_id')->nullable()->constrained()->cascadeOnDelete();
+            $table->foreignIdFor(Cart::class)->constrained()->cascadeOnDelete();
+            $table->foreignIdFor(Product::class)->constrained()->cascadeOnDelete();
+            $table->foreignIdFor(ProductVariation::class)->nullable()->constrained()->cascadeOnDelete();
             $table->integer('quantity')->default(1);
             $table->decimal('unit_price', 10, 2);
             $table->timestamps();
 
-            // Aynı ürün+varyasyon kombinasyonu sepette tekrar edilemez
             $table->unique(['cart_id', 'product_id', 'product_variation_id'], 'cart_item_unique');
         });
     }

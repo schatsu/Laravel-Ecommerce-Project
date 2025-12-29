@@ -32,6 +32,8 @@ class Product extends Model implements HasMedia
         'selling_price',
         'cost_price',
         'discount_price',
+        'sku',
+        'stock_quantity',
         'status',
         'is_featured',
         'is_new',
@@ -56,11 +58,14 @@ class Product extends Model implements HasMedia
     public function registerMediaConversions(?Media $media = null): void
     {
         $this->addMediaConversion('thumb')
-            ->width(100);
+            ->width(100)
+            ->nonQueued();
         $this->addMediaConversion('small')
-            ->width(480);
+            ->width(480)
+            ->nonQueued();
         $this->addMediaConversion('large')
-            ->width(1200);
+            ->width(1200)
+            ->nonQueued();
     }
 
     public function getSlugOptions(): SlugOptions
@@ -79,6 +84,12 @@ class Product extends Model implements HasMedia
     {
         return $this->hasMany(ProductVariation::class, 'product_id');
     }
+
+    public function orderItems(): HasMany
+    {
+        return $this->hasMany(OrderItem::class, 'product_id');
+    }
+
     public function variationTypes(): HasMany
     {
         return $this->hasMany(VariationType::class);

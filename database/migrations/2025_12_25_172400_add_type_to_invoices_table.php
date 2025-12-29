@@ -9,18 +9,10 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('invoices', function (Blueprint $table) {
-            $table->string('type')->default('delivery')->after('user_id'); // delivery, billing
+            $table->string('type')->default('delivery')->after('user_id');
             $table->boolean('default_delivery')->default(false)->after('default_invoice');
             $table->boolean('default_billing')->default(false)->after('default_delivery');
         });
-
-        // Mevcut varsayılan adresleri güncelle
-        DB::table('invoices')
-            ->where('default_invoice', true)
-            ->update([
-                'default_delivery' => true,
-                'default_billing' => true,
-            ]);
     }
 
     public function down(): void
