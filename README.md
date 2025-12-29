@@ -1,4 +1,4 @@
-# Ata Silver - E-Commerce Platform
+# Laravel E-Commerce Project
 
 <p align="center">
   <img src="https://img.shields.io/badge/Laravel-12.x-FF2D20?style=for-the-badge&logo=laravel&logoColor=white" alt="Laravel">
@@ -12,7 +12,7 @@
 
 ## Overview
 
-Ata Silver is a modern, full-featured e-commerce platform built specifically for jewelry retail. The application provides a seamless shopping experience for customers and a powerful admin panel for store management.
+A modern, full-featured e-commerce platform built with Laravel. The application provides a seamless shopping experience for customers and a powerful admin panel for store management.
 
 ## Features
 
@@ -76,8 +76,8 @@ Ata Silver is a modern, full-featured e-commerce platform built specifically for
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/yourusername/atasilver.git
-   cd atasilver
+   git clone https://github.com/schatsu/Laravel-Ecommerce-Project.git
+   cd Laravel-Ecommerce-Project
    ```
 
 2. **Install PHP dependencies**
@@ -101,7 +101,7 @@ Ata Silver is a modern, full-featured e-commerce platform built specifically for
    DB_CONNECTION=pgsql
    DB_HOST=127.0.0.1
    DB_PORT=5432
-   DB_DATABASE=atasilver
+   DB_DATABASE=your_database
    DB_USERNAME=your_username
    DB_PASSWORD=your_password
 
@@ -140,7 +140,6 @@ After seeding, you can access the admin panel at `/admin` with:
 ## Project Structure
 
 ```
-atasilver/
 ├── app/
 │   ├── Filament/          # Admin panel resources
 │   ├── Http/Controllers/
@@ -175,15 +174,12 @@ Laravel Telescope is available at `/telescope` in development.
 ## Roadmap
 
 - [ ] Product reviews and ratings
-- [ ] Multi-language support
 - [ ] Email notifications
-- [ ] Advanced analytics dashboard
-- [ ] API for mobile apps
 - [ ] Social login integration
 
 ## Contributing
 
-This project is currently in private development. Contribution guidelines will be added once the project reaches a stable release.
+This project is currently in active development. Contribution guidelines will be added once the project reaches a stable release.
 
 ## License
 
@@ -192,5 +188,5 @@ This project is proprietary software. All rights reserved.
 ---
 
 <p align="center">
-  <strong>Built with ❤️ for jewelry lovers</strong>
+  <strong>Built with ❤️ using Laravel</strong>
 </p>
