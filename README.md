@@ -1,63 +1,196 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Ata Silver - E-Commerce Platform
 
 <p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
+  <img src="https://img.shields.io/badge/Laravel-12.x-FF2D20?style=for-the-badge&logo=laravel&logoColor=white" alt="Laravel">
+  <img src="https://img.shields.io/badge/PHP-8.2+-777BB4?style=for-the-badge&logo=php&logoColor=white" alt="PHP">
+  <img src="https://img.shields.io/badge/Filament-3.x-FBBF24?style=for-the-badge" alt="Filament">
+  <img src="https://img.shields.io/badge/PostgreSQL-4169E1?style=for-the-badge&logo=postgresql&logoColor=white" alt="PostgreSQL">
+  <img src="https://img.shields.io/badge/Status-In%20Development-orange?style=for-the-badge" alt="Status">
 </p>
 
-## About Laravel
+> ⚠️ **This project is actively under development.** Features and documentation may change frequently.
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## Overview
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+Ata Silver is a modern, full-featured e-commerce platform built specifically for jewelry retail. The application provides a seamless shopping experience for customers and a powerful admin panel for store management.
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+## Features
 
-## Learning Laravel
+### Customer Features
+- 🛒 **Shopping Cart** - Add products with variations, apply coupons
+- ❤️ **Wishlist/Favorites** - Save products for later
+- 🔍 **Product Filtering** - Filter by price, category, attributes
+- 📱 **Responsive Design** - Optimized for all devices
+- 💳 **Secure Payments** - Integrated with Iyzico payment gateway (3D Secure support)
+- 📦 **Order Tracking** - View order history and status
+- 👤 **User Accounts** - Profile management, address book, order history
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+### Product Features
+- 📸 **Media Library** - Multiple product images with zoom functionality
+- 🎨 **Product Variations** - Support for color, size, and custom attributes
+- 🏷️ **Dynamic Pricing** - Discount prices, sale badges
+- 📊 **Stock Management** - Per-variation inventory tracking
+- ⭐ **Product Badges** - New, Best Seller, Featured labels
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+### Admin Panel (Filament)
+- 📊 **Dashboard** - Sales analytics and insights
+- 📦 **Product Management** - Simple and variable products
+- 📁 **Category Management** - Hierarchical categories
+- 🎫 **Coupon System** - Percentage and fixed discounts
+- 📋 **Order Management** - Process and track orders
+- 👥 **Customer Management** - User accounts and roles
+- 🛡️ **Role-Based Access** - Powered by Filament Shield
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+## Tech Stack
 
-## Laravel Sponsors
+### Backend
+- **Framework:** Laravel 12.x
+- **Admin Panel:** Filament 3.x
+- **Database:** PostgreSQL
+- **Cache & Queue:** Redis (via Predis)
+- **Queue Monitoring:** Laravel Horizon
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+### Frontend
+- **Template Engine:** Blade
+- **CSS Framework:** Bootstrap 5
+- **JavaScript:** jQuery, Axios
+- **UI Components:** Swiper, PhotoSwipe
 
-### Premium Partners
+### Key Packages
+- `spatie/laravel-media-library` - Media management
+- `spatie/laravel-sluggable` - URL slug generation
+- `iyzico/iyzipay-php` - Payment processing
+- `multicaret/laravel-acquaintances` - Favorites/Wishlist
+- `tucker-eric/eloquentfilter` - Advanced filtering
+- `bezhansalleh/filament-shield` - Role management
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+## Requirements
+
+- PHP 8.2 or higher
+- PostgreSQL 14+
+- Redis
+- Node.js 18+ & npm
+- Composer
+
+## Installation
+
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/yourusername/atasilver.git
+   cd atasilver
+   ```
+
+2. **Install PHP dependencies**
+   ```bash
+   composer install
+   ```
+
+3. **Install Node dependencies**
+   ```bash
+   npm install
+   ```
+
+4. **Environment setup**
+   ```bash
+   cp .env.example .env
+   php artisan key:generate
+   ```
+
+5. **Configure your `.env` file**
+   ```env
+   DB_CONNECTION=pgsql
+   DB_HOST=127.0.0.1
+   DB_PORT=5432
+   DB_DATABASE=atasilver
+   DB_USERNAME=your_username
+   DB_PASSWORD=your_password
+
+   REDIS_HOST=127.0.0.1
+   REDIS_PASSWORD=null
+   REDIS_PORT=6379
+
+   # Iyzico Payment
+   IYZICO_API_KEY=your_api_key
+   IYZICO_SECRET_KEY=your_secret_key
+   IYZICO_BASE_URL=https://sandbox-api.iyzipay.com
+   ```
+
+6. **Run migrations and seeders**
+   ```bash
+   php artisan migrate --seed
+   ```
+
+7. **Build assets**
+   ```bash
+   npm run build
+   ```
+
+8. **Start the development server**
+   ```bash
+   composer dev
+   ```
+   This command starts the Laravel server, queue worker, log tail, and Vite dev server concurrently.
+
+## Admin Access
+
+After seeding, you can access the admin panel at `/admin` with:
+- **Email:** admin@admin.com
+- **Password:** password
+
+## Project Structure
+
+```
+atasilver/
+├── app/
+│   ├── Filament/          # Admin panel resources
+│   ├── Http/Controllers/
+│   │   ├── Front/         # Customer-facing controllers
+│   │   └── ...
+│   ├── Models/            # Eloquent models
+│   └── ...
+├── resources/
+│   └── views/
+│       ├── app/           # Customer frontend views
+│       └── filament/      # Admin panel customizations
+├── public/
+│   └── front/             # Frontend assets (CSS, JS, images)
+└── ...
+```
+
+## Development
+
+### Running Tests
+```bash
+composer test
+```
+
+### Code Formatting
+```bash
+./vendor/bin/pint
+```
+
+### Debugging
+Laravel Telescope is available at `/telescope` in development.
+
+## Roadmap
+
+- [ ] Product reviews and ratings
+- [ ] Multi-language support
+- [ ] Email notifications
+- [ ] Advanced analytics dashboard
+- [ ] API for mobile apps
+- [ ] Social login integration
 
 ## Contributing
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
-
-## Code of Conduct
-
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
-
-## Security Vulnerabilities
-
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+This project is currently in private development. Contribution guidelines will be added once the project reaches a stable release.
 
 ## License
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
-# atasilver
-# atasilver
+This project is proprietary software. All rights reserved.
+
+---
+
+<p align="center">
+  <strong>Built with ❤️ for jewelry lovers</strong>
+</p>
