@@ -133,9 +133,26 @@ A modern, full-featured e-commerce platform built with Laravel. The application 
 
 ## Admin Access
 
-After seeding, you can access the admin panel at `/admin` with:
-- **Email:** admin@admin.com
-- **Password:** password
+To set up your admin user, run the following commands:
+
+1. **Create an admin user**
+   ```bash
+   php artisan filament:user
+   ```
+   Follow the prompts to enter name, email, and password.
+
+2. **Assign super admin role**
+   ```bash
+   php artisan shield:super-admin --user=1
+   ```
+   Replace `1` with your user ID.
+
+3. **Generate all policies for admin**
+   ```bash
+   php artisan shield:generate --all
+   ```
+
+After setup, access the admin panel at `/admin` with your credentials.
 
 ## Project Structure
 
