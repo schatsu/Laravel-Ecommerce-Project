@@ -133,6 +133,7 @@ class CheckoutController extends Controller
 
     public function pay(PaymentRequest $request): View|RedirectResponse
     {
+        dd($request->all());
         $user = auth()->user();
 
         $order = Order::query()
@@ -249,7 +250,6 @@ class CheckoutController extends Controller
 
     public function success(string $hashId): View
     {
-        dd($hashId);
         $order = Order::query()
             ->findByHashidOrFail($hashId);
 
