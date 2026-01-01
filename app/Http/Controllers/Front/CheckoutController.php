@@ -165,7 +165,6 @@ class CheckoutController extends Controller
                 $shippingAddress,
                 $request->installment ?? 1
             );
-            dd($result);
 
             if ($result->getStatus() !== 'success') {
                 return redirect()->route('checkout.payment-form', $order->hashid())
