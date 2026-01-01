@@ -138,16 +138,17 @@ class CheckoutController extends Controller
         $order = Order::query()
             ->whereRelation('user', 'id', $user?->id)
             ->findOrFail($request->order_id);
-        dd($order);
 
         $expireParts = explode('/', $request->expire_date);
         $cardData = [
             'card_number' => $request->card_number,
             'holder_name' => $request->holder_name,
             'expire_month' => $expireParts[0] ?? '01',
-            'expire_year' => '20' . ($expireParts[1] ?? '25'),
+            'expire_year' => '20' . ($expireParts[1] ?? '26'),
             'cvc' => $request->cvc,
         ];
+        dd($cardData);
+
 
         $billingAddress = session('checkout.billing_address', []);
         $shippingAddress = session('checkout.shipping_address', []);
