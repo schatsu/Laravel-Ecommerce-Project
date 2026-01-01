@@ -154,7 +154,6 @@ class CheckoutController extends Controller
         $use3DSecure = $request->has('use_3d_secure');
 
         if ($use3DSecure) {
-            // 3D Secure ödeme
             $result = $this->iyzicoService->create3DSecurePayment(
                 $order,
                 $user,
@@ -173,7 +172,6 @@ class CheckoutController extends Controller
                 'htmlContent' => $result->getHtmlContent(),
             ]);
         } else {
-            // Doğrudan ödeme (3D'siz)
             $result = $this->iyzicoService->createDirectPayment(
                 $order,
                 $user,
@@ -209,7 +207,6 @@ class CheckoutController extends Controller
         $conversationId = $request->input('conversationId');
         $mdStatus = $request->input('mdStatus');
 
-        // Debug log
         \Log::info('3D Callback received', [
             'status' => $status,
             'paymentId' => $paymentId,
@@ -233,7 +230,6 @@ class CheckoutController extends Controller
 
         $result = $this->iyzicoService->complete3DSecurePayment($paymentId);
 
-        // Debug log - iyzico result
         \Log::info('3D Payment completion result', [
             'status' => $result->getStatus(),
             'paymentStatus' => $result->getPaymentStatus(),
@@ -253,6 +249,7 @@ class CheckoutController extends Controller
 
     public function success(string $hashId): View
     {
+        dd($hashId);
         $order = Order::query()
             ->findByHashidOrFail($hashId);
 

@@ -47,7 +47,6 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/adres/ajax', [CustomerInvoicesController::class, 'storeAjax'])->name('address.storeAjax');
     });
 
-    // Checkout Routes
     Route::prefix('odeme')->as('checkout.')->group(function () {
         Route::get('/', [CheckoutController::class, 'index'])->name('index');
         Route::post('/process', [CheckoutController::class, 'process'])->name('process');
@@ -59,7 +58,6 @@ Route::middleware(['auth'])->group(function () {
     Route::post('cikis', [LoginController::class, 'logout'])->name('logout');
 });
 
-// 3D Callback ve sonuç sayfaları - auth dışında
 Route::post('/odeme/3d-callback', [CheckoutController::class, 'threeDCallback'])->name('checkout.3d-callback');
 Route::get('/odeme/basarili/{order}', [CheckoutController::class, 'success'])->name('checkout.success');
 Route::get('/odeme/basarisiz', [CheckoutController::class, 'fail'])->name('checkout.fail');
