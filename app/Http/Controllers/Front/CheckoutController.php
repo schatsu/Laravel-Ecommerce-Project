@@ -147,11 +147,12 @@ class CheckoutController extends Controller
             'expire_year' => '20' . ($expireParts[1] ?? '26'),
             'cvc' => $request->cvc,
         ];
-        dd($cardData);
 
 
         $billingAddress = session('checkout.billing_address', []);
         $shippingAddress = session('checkout.shipping_address', []);
+
+        dd($billingAddress, $shippingAddress);
 
         $use3DSecure = $request->has('use_3d_secure');
 
