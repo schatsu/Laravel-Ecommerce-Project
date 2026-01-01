@@ -23880,7 +23880,7 @@ html:not([dir=rtl]) .noUi-horizontal .noUi-handle {
 }
 
 .account-address-item.default-address {
-  border-color: var(--primary);
+  border-color: #000000;
   background: linear-gradient(135deg, rgba(219, 18, 21, 0.02) 0%, rgba(255, 255, 255, 1) 100%);
 }
 

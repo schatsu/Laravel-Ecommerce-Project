@@ -242,7 +242,7 @@
             <div class="toolbar-icon">
                 <i class="icon-shop"></i>
             </div>
-            <div class="toolbar-label">Shop</div>
+            <div class="toolbar-label">Ana Sayfa</div>
         </a>
     </div>
 
@@ -251,7 +251,7 @@
             <div class="toolbar-icon">
                 <i class="icon-search"></i>
             </div>
-            <div class="toolbar-label">Search</div>
+            <div class="toolbar-label">Arama</div>
         </a>
     </div>
     <div class="toolbar-item">
@@ -259,7 +259,7 @@
             <div class="toolbar-icon">
                 <i class="icon-account"></i>
             </div>
-            <div class="toolbar-label">Account</div>
+            <div class="toolbar-label">Hesabım</div>
         </a>
     </div>
     <div class="toolbar-item">
@@ -268,7 +268,7 @@
                 <i class="icon-heart"></i>
                 <div class="toolbar-count">0</div>
             </div>
-            <div class="toolbar-label">Wishlist</div>
+            <div class="toolbar-label">Favorilerim</div>
         </a>
     </div>
     <div class="toolbar-item">
@@ -277,7 +277,7 @@
                 <i class="icon-bag"></i>
                 <div class="toolbar-count">1</div>
             </div>
-            <div class="toolbar-label">Cart</div>
+            <div class="toolbar-label">Sepet</div>
         </a>
     </div>
 </div>

@@ -153,4 +153,40 @@ class Product extends Model implements HasMedia
     {
         return $this->display_original_price !== null;
     }
+
+    public function reviews(): HasMany
+    {
+        return $this->hasMany(Review::class);
+    }
+
+    public function approvedReviews(): HasMany
+    {
+        return $this->hasMany(Review::class)->approved();
+    }
+
+    public function getAverageRatingAttribute(): float
+    {
+        return round($this->approvedReviews()->avg('rating') ?? 0, 1);
+    }
+
+    public function getReviewsCountAttribute(): int
+    {
+        return $this->approvedReviews()->count();
+    }
+
+    public function getRatingDistributionAttribute(): array
+    {
+        $distribution = [];
+        $total = $this->reviews_count;
+
+        for ($i = 5; $i >= 1; $i--) {
+            $count = $this->approvedReviews()->where('rating', $i)->count();
+            $distribution[$i] = [
+                'count' => $count,
+                'percentage' => $total > 0 ? round(($count / $total) * 100, 2) : 0,
+            ];
+        }
+
+        return $distribution;
+    }
 }

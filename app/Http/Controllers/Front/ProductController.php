@@ -47,6 +47,34 @@ class ProductController extends Controller
         $shareTitle = $product->name;
         $shareText = $product->short_description ?? $product->name;
 
+        // Reviews data
+        $reviews = $product->approvedReviews()
+            ->with('user')
+            ->latest()
+            ->get();
+
+        $averageRating = $product->average_rating;
+        $reviewsCount = $product->reviews_count;
+        $ratingDistribution = $product->rating_distribution;
+
+        // Check if current user has already reviewed and if they have purchased
+        $userReview = null;
+        $hasPurchased = false;
+
+        if (auth()->check()) {
+            $userReview = $product->reviews()
+                ->where('user_id', auth()->id())
+                ->first();
+
+            // Check if user has purchased this product (delivered orders only)
+            $hasPurchased = \App\Models\Order::where('user_id', auth()->id())
+                ->where('status', \App\Enums\Admin\OrderStatusEnum::DELIVERED)
+                ->whereHas('items', function ($query) use ($product) {
+                    $query->where('product_id', $product->id);
+                })
+                ->exists();
+        }
+
         return view('app.product.show', [
             'product' => $product,
             'selectedVariation' => $selectedVariation,
@@ -60,6 +88,12 @@ class ProductController extends Controller
             'shareUrl' => $shareUrl,
             'shareTitle' => $shareTitle,
             'shareText' => $shareText,
+            'reviews' => $reviews,
+            'averageRating' => $averageRating,
+            'reviewsCount' => $reviewsCount,
+            'ratingDistribution' => $ratingDistribution,
+            'userReview' => $userReview,
+            'hasPurchased' => $hasPurchased,
         ]);
     }
 

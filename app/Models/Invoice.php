@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use App\Enums\AddressType;
+use App\Enums\Admin\AddressType;
 use App\Enums\Admin\InvoiceCompanyTypeEnum;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
@@ -13,6 +13,11 @@ use Spatie\Sluggable\SlugOptions;
 class Invoice extends Model
 {
     use HasSlug;
+
+    protected $appends = [
+        'full_name',
+        'full_address',
+    ];
 
     protected $fillable = [
         'user_id',

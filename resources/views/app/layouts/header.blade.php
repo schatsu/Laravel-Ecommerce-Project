@@ -45,9 +45,13 @@
                                         <i class="icon icon-car-order"></i>
                                         <span>Siparişlerim</span>
                                     </a>
+                                    <a class="dropdown-item" href="{{route('account.coupons')}}">
+                                        <i class="icon icon-gift"></i>
+                                        <span>Kuponlarım</span>
+                                    </a>
                                     <a class="dropdown-item" href="{{route('account.favorite.index')}}">
                                         <i class="icon icon-heart"></i>
-                                        <span>İstek Listem</span>
+                                        <span>Favorilerim</span>
                                     </a>
                                     <div class="dropdown-divider"></div>
                                     <form method="POST" action="{{route('logout')}}">

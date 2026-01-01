@@ -1,22 +1,18 @@
 @extends('app.layouts.main')
 @section('title', 'Adreslerim')
-
 @push('css')
 <style>
-    /* Düzenleme formu açıkken kart genişliğini artır */
     .account-address-item:has(.edit-form-address:not(.d-none)) {
         max-width: 100% !important;
         width: 100% !important;
     }
 
-    /* Liste genişliği */
     .list-account-address {
         display: flex;
         flex-direction: column;
         gap: 20px;
     }
 
-    /* Düzenleme formu genişliği */
     .edit-form-address {
         max-width: 100% !important;
         width: 100% !important;
@@ -185,7 +181,7 @@
                                     <div class="account-address-item {{ $item->default_invoice ? 'default-address' : '' }}" data-id="{{ $item->id }}">
                                         <div class="address-header">
                                             @if($item->default_invoice)
-                                                <span style="background-color: #06861f" class="default-badge"><i class="icon icon-check"></i> Varsayılan</span>
+                                                <span style="background-color: #06861f" class="default-badge"> Varsayılan</span>
                                             @endif
                                             <span class="address-type-badge {{ $item->company_type === 'corporate' ? 'corporate' : 'individual' }}">
                                                 {{ $item->company_type === 'corporate' ? 'Kurumsal' : 'Bireysel' }}
@@ -208,14 +204,14 @@
                                                     @csrf
                                                     @method('PATCH')
                                                     <button type="submit" class="tf-btn btn-sm btn-outline animate-hover-btn">
-                                                        <i class="icon icon-check me-1"></i> Varsayılan Yap
+                                                         Varsayılan Yap
                                                     </button>
                                                 </form>
                                             @endif
                                             <button class="tf-btn btn-sm btn-fill animate-hover-btn btn-edit-address">
                                                    Düzenle
                                             </button>
-                                            <form method="POST" action="{{ route('account.address.destroy', $item->slug) }}" class="d-inline" onsubmit="return confirm('Bu adresi silmek istediğinize emin misiniz?');">
+                                            <form method="POST" action="{{ route('account.address.destroy', $item->slug) }}" class="d-inline">
                                                 @csrf
                                                 @method('DELETE')
                                                 <button type="submit" class="tf-btn btn-sm btn-danger-outline animate-hover-btn">

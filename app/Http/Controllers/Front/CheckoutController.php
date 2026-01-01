@@ -48,7 +48,15 @@ class CheckoutController extends Controller
             ->orderByRaw("CASE WHEN (name = 'Türkiye') THEN 1 ELSE 0 END DESC")
             ->get();
 
-        return view('app.checkout.index', compact('cart', 'addresses', 'defaultAddress', 'countries'));
+        // Calculate shipping and totals
+        $subtotalAfterDiscount = $cart->subtotal - ($cart->discount_amount ?? 0);
+        $shippingCost = $subtotalAfterDiscount >= 500 ? 0 : 29.90;
+        $grandTotal = $subtotalAfterDiscount + $shippingCost;
+
+        return view('app.checkout.index', compact(
+            'cart', 'addresses', 'defaultAddress', 'countries',
+            'subtotalAfterDiscount', 'shippingCost', 'grandTotal'
+        ));
     }
 
     public function process(CheckoutProcessRequest $request)

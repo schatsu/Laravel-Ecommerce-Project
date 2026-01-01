@@ -15,7 +15,7 @@
                         <div class="mb_60">
                             <h5 class="fw-5 mb_20">Merhaba {{auth()?->user()?->full_name}}</h5>
                             <p>
-                                Hesap kontrol panelinizden <a class="text_primary" href="my-account-orders.html">son siparişlerinizi görüntüleyebilir</a>, <a class="text_primary" href="{{route('account.address')}}">fatura ve teslimat adreslerinizi yönetebilir</a> ve <a class="text_primary" href="my-account-edit.html">şifrenizi ve hesap bilgilerinizi düzenleyebilirsiniz</a>.
+                                Hesap kontrol panelinizden <a class="text_primary" href="{{route('account.orders.index')}}">son siparişlerinizi görüntüleyebilir</a>, <a class="text_primary" href="{{route('account.address')}}">fatura ve teslimat adreslerinizi yönetebilir</a> ve <a class="text_primary" href="{{route('account.account.details')}}">şifrenizi ve hesap bilgilerinizi düzenleyebilirsiniz</a>.
                             </p>
                         </div>
                     </div>
@@ -31,7 +31,7 @@
     <div class="offcanvas offcanvas-start canvas-filter canvas-sidebar canvas-sidebar-account" id="mbAccount">
         <div class="canvas-wrapper">
             <header class="canvas-header">
-                <span class="title">SIDEBAR ACCOUNT</span>
+                <span class="title">Hesabım</span>
                 <span class="icon-close icon-close-popup" data-bs-dismiss="offcanvas" aria-label="Close"></span>
             </header>
             <div class="canvas-body sidebar-mobile-append"> </div>

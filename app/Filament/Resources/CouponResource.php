@@ -2,7 +2,7 @@
 
 namespace App\Filament\Resources;
 
-use App\Enums\CouponType;
+use App\Enums\Admin\CouponType;
 use App\Filament\Resources\CouponResource\Pages;
 use App\Models\Coupon;
 use Exception;
@@ -30,7 +30,7 @@ class CouponResource extends Resource
     protected static ?string $model = Coupon::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-receipt-percent';
-    protected static ?string $navigationGroup = 'E-Ticaret';
+    protected static ?string $navigationGroup = 'Mağaza';
     protected static ?int $navigationSort = 5;
     protected static ?string $navigationLabel = 'Kuponlar';
     protected static ?string $pluralModelLabel = 'Kuponlar';

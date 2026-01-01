@@ -3,22 +3,25 @@
 namespace App\Http\Controllers\Front;
 
 
-use App\Enums\AddressType;
+use App\Exceptions\ProcessException;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Front\StoreInvoiceAjaxRequest;
 use App\Http\Requests\Front\StoreInvoiceRequest;
 use App\Http\Requests\Front\UpdateAddressRequest;
 use App\Models\Country;
+use App\Traits\Responder;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
 use Illuminate\Foundation\Application;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
 use Throwable;
 
 
 class CustomerInvoicesController extends Controller
 {
+
+    use Responder;
     /**
      * Display a listing of the resource.
      */
@@ -26,7 +29,7 @@ class CustomerInvoicesController extends Controller
     {
         $user = auth()->user();
 
-        $address = $user?->invoices;
+        $address = $user?->invoices()->with(['country', 'city', 'district'])->get();
 
         $countries = Country::query()->select(['id','slug', 'name'])->orderByRaw("CASE WHEN (name = 'Türkiye') THEN 1 ELSE 0 END DESC")->get();
 
@@ -35,6 +38,7 @@ class CustomerInvoicesController extends Controller
 
     /**
      * Store a newly created resource in storage.
+     * @throws Throwable
      */
     public function store(StoreInvoiceRequest $request): RedirectResponse
     {
@@ -49,65 +53,41 @@ class CustomerInvoicesController extends Controller
             $attributes->get('default_invoice') == true;
         }
 
-        $user->invoices()->create($attributes->toArray());
+        $invoice = $user->invoices()->create($attributes->toArray());
+
+        throw_unless($invoice, ProcessException::class, 'Adres kaydedilemedi.');
 
         return redirect()->route('account.address')->with('toast_success', 'Adres başarıyla kaydedildi.');
     }
 
+
     /**
-     * Store via AJAX (from checkout modal)
+     * @throws Throwable
      */
-    public function storeAjax(Request $request): JsonResponse
+    public function storeAjax(StoreInvoiceAjaxRequest $request): JsonResponse
     {
-        $validated = $request->validate([
-            'type' => 'required|in:delivery,billing',
-            'name' => 'required|string|max:255',
-            'surname' => 'required|string|max:255',
-            'phone' => 'required|string|max:20',
-            'address' => 'required|string',
-            'country_id' => 'required|exists:countries,id',
-            'city_id' => 'required|exists:cities,id',
-            'district_id' => 'required|exists:districts,id',
-            'identity_number' => 'nullable|string|max:11',
-            'company_type' => 'nullable|in:individual,corporate',
-            'company_name' => 'nullable|string|max:255',
-            'tax_number' => 'nullable|string|max:50',
-            'tax_office' => 'nullable|string|max:255',
-            'default_delivery' => 'nullable|boolean',
-            'default_billing' => 'nullable|boolean',
-        ]);
+        $attributes = collect($request->validated());
 
         $user = auth()->user();
-        $type = AddressType::from($validated['type']);
 
-        if (!empty($validated['default_delivery'])) {
+        if (!empty($attributes->get('default_delivery'))) {
             $user->invoices()->update(['default_delivery' => false]);
         }
-        if (!empty($validated['default_billing'])) {
+        if (!empty($attributes->get('default_billing'))) {
             $user->invoices()->update(['default_billing' => false]);
         }
 
         if ($user->invoices()->count() === 0) {
-            $validated['default_delivery'] = true;
-            $validated['default_billing'] = true;
+            $attributes['default_delivery'] = true;
+            $attributes['default_billing'] = true;
         }
 
-        $invoice = $user->invoices()->create($validated);
-        $invoice->load('country', 'city', 'district');
+        $invoice = $user->invoices()->create($attributes->toArray());
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Adres başarıyla eklendi.',
-            'data' => [
-                'id' => $invoice->id,
-                'full_name' => $invoice->full_name,
-                'full_address' => $invoice->full_address,
-                'phone' => $invoice->phone,
-                'type' => $invoice->type->value,
-                'default_delivery' => $invoice->default_delivery,
-                'default_billing' => $invoice->default_billing,
-            ],
-        ]);
+        throw_unless($invoice, ProcessException::class, 'Adres kaydedilemedi.');
+
+
+        return $this->success($invoice, 'Adres başarıyla eklendi.');
     }
 
     /**
@@ -129,9 +109,9 @@ class CustomerInvoicesController extends Controller
             $attributes->put('default_invoice', false);
         }
 
-        $invoice->update($attributes->toArray());
+        $update = $invoice->update($attributes->toArray());
 
-        throw_unless($invoice, \Exception::class, 'Hata');
+        throw_unless($update, ProcessException::class, 'Adres güncellenemedi.');
 
         return redirect()->back()->with('toast_success', 'Adres başarıyla güncellendi.');
     }

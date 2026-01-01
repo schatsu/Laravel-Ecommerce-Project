@@ -2,9 +2,8 @@
 
 namespace App\Models;
 
-use App\Enums\CouponType;
+use App\Enums\Admin\CouponType;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Coupon extends Model

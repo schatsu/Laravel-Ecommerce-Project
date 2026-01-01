@@ -3,7 +3,7 @@
 namespace App\Filament\Resources;
 
 use App\Enums\Admin\ProductStatusEnum;
-use App\Enums\ProductVariationType;
+use App\Enums\Admin\ProductVariationType;
 use App\Filament\Resources\ProductResource\Pages;
 use App\Models\Product;
 use Exception;
@@ -31,7 +31,7 @@ class ProductResource extends Resource
     protected static ?string $model = Product::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-shopping-cart';
-    protected static ?string $navigationGroup = 'E-Ticaret';
+    protected static ?string $navigationGroup = 'Mağaza';
     protected static ?int $navigationSort = 2;
     protected static ?string $navigationLabel = 'Ürünler';
     protected static ?string $pluralModelLabel = 'Ürünler';

@@ -12,6 +12,7 @@ use App\Http\Controllers\Front\OrderController;
 use App\Http\Controllers\Front\ProductController;
 use App\Http\Controllers\Front\RegisterController;
 use App\Http\Controllers\Front\ResetPasswordController;
+use App\Http\Controllers\Front\ReviewController;
 use App\Http\Controllers\Front\UserProfileController;
 use Illuminate\Support\Facades\Route;
 
@@ -67,6 +68,7 @@ Route::get('/', HomeController::class)->name('home');
 Route::get('kategoriler', [CategoryController::class, 'index'])->name('category.index');
 Route::get('kategori/{slug}', [CategoryController::class, 'show'])->name('category.show');
 Route::get('urun/{slug}', [ProductController::class, 'show'])->name('product.show');
+Route::post('urun/{slug}/yorum', [ReviewController::class, 'store'])->middleware('auth')->name('review.store');
 Route::get('/quick-view/{product}', [ProductController::class, 'quickView'])->name('product.quick-view');
 
 Route::prefix('sepet')->as('cart.')->group(function () {

@@ -65,7 +65,7 @@ class CartItem extends Model
                 : $this->variation->selectedOptions();
 
             foreach ($options as $option) {
-                if ($option->variationType?->type === \App\Enums\ProductVariationType::IMAGE) {
+                if ($option->variationType?->type === \App\Enums\Admin\ProductVariationType::IMAGE) {
                     $mediaUrl = $option->getFirstMediaUrl('images', 'small');
                     if ($mediaUrl) {
                         return $mediaUrl;

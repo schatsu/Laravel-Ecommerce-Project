@@ -444,207 +444,180 @@
                                     <div class="tab-reviews-heading">
                                         <div class="top">
                                             <div class="text-center">
-                                                <h1 class="number fw-6">4.8</h1>
+                                                <h1 class="number fw-6">{{ $averageRating > 0 ? number_format($averageRating, 1) : '-' }}</h1>
                                                 <div class="list-star">
-                                                    <i class="icon icon-star"></i>
-                                                    <i class="icon icon-star"></i>
-                                                    <i class="icon icon-star"></i>
-                                                    <i class="icon icon-star"></i>
-                                                    <i class="icon icon-star"></i>
+                                                    @for($i = 1; $i <= 5; $i++)
+                                                        @if($i <= round($averageRating))
+                                                            <i class="icon icon-star" style="color: #ffc107;"></i>
+                                                        @else
+                                                            <i class="icon icon-star" style="color: #e0e0e0;"></i>
+                                                        @endif
+                                                    @endfor
                                                 </div>
-                                                <p>(168 Ratings)</p>
+                                                <p>({{ $reviewsCount }} Değerlendirme)</p>
                                             </div>
                                             <div class="rating-score">
-                                                <div class="item">
-                                                    <div class="number-1 text-caption-1">5</div>
-                                                    <i class="icon icon-star"></i>
-                                                    <div class="line-bg">
-                                                        <div style="width: 94.67%;"></div>
+                                                @foreach($ratingDistribution as $star => $data)
+                                                    <div class="item">
+                                                        <div class="number-1 text-caption-1">{{ $star }}</div>
+                                                        <i class="icon icon-star" style="color: #ffc107;"></i>
+                                                        <div class="line-bg">
+                                                            <div style="width: {{ $data['percentage'] }}%;"></div>
+                                                        </div>
+                                                        <div class="number-2 text-caption-1">{{ $data['count'] }}</div>
                                                     </div>
-                                                    <div class="number-2 text-caption-1">59</div>
-                                                </div>
-                                                <div class="item">
-                                                    <div class="number-1 text-caption-1">4</div>
-                                                    <i class="icon icon-star"></i>
-                                                    <div class="line-bg">
-                                                        <div style="width: 60%;"></div>
-                                                    </div>
-                                                    <div class="number-2 text-caption-1">46</div>
-                                                </div>
-                                                <div class="item">
-                                                    <div class="number-1 text-caption-1">3</div>
-                                                    <i class="icon icon-star"></i>
-                                                    <div class="line-bg">
-                                                        <div style="width: 0%;"></div>
-                                                    </div>
-                                                    <div class="number-2 text-caption-1">0</div>
-                                                </div>
-                                                <div class="item">
-                                                    <div class="number-1 text-caption-1">2</div>
-                                                    <i class="icon icon-star"></i>
-                                                    <div class="line-bg">
-                                                        <div style="width: 0%;"></div>
-                                                    </div>
-                                                    <div class="number-2 text-caption-1">0</div>
-                                                </div>
-                                                <div class="item">
-                                                    <div class="number-1 text-caption-1">1</div>
-                                                    <i class="icon icon-star"></i>
-                                                    <div class="line-bg">
-                                                        <div style="width: 0%;"></div>
-                                                    </div>
-                                                    <div class="number-2 text-caption-1">0</div>
-                                                </div>
+                                                @endforeach
                                             </div>
                                         </div>
-                                        <div>
-                                            <div
-                                                class="tf-btn btn-outline-dark fw-6 btn-comment-review btn-cancel-review">
-                                                Cancel Review</div>
-                                            <div
-                                                class="tf-btn btn-outline-dark fw-6 btn-comment-review btn-write-review">
-                                                Write a review</div>
-                                        </div>
+                                        @auth
+                                            @if($userReview)
+                                                <div class="alert alert-info mt-3">
+                                                    <i class="icon icon-check"></i>
+                                                    Bu ürüne zaten yorum yaptınız.
+                                                    @if($userReview->status->value === 'pending')
+                                                        <span class="badge bg-warning">Onay bekliyor</span>
+                                                    @elseif($userReview->status->value === 'approved')
+                                                        <span class="badge bg-success">Yayında</span>
+                                                    @else
+                                                        <span class="badge bg-danger">Reddedildi</span>
+                                                    @endif
+                                                </div>
+                                            @elseif($hasPurchased)
+                                                <div>
+                                                    <div class="tf-btn btn-outline-dark fw-6 btn-comment-review btn-cancel-review">
+                                                        İptal
+                                                    </div>
+                                                    <div class="tf-btn btn-outline-dark fw-6 btn-comment-review btn-write-review">
+                                                        Yorum Yaz
+                                                    </div>
+                                                </div>
+                                            @else
+                                                <div class="alert alert-secondary mt-3">
+                                                    <i class="icon icon-cart"></i>
+                                                    Yorum yapabilmek için bu ürünü satın almış olmalısınız.
+                                                </div>
+                                            @endif
+                                        @else
+                                            <div class="mt-3">
+                                                <a href="{{ route('login') }}" class="tf-btn btn-outline-dark fw-6">
+                                                    Yorum yapmak için giriş yapın
+                                                </a>
+                                            </div>
+                                        @endauth
                                     </div>
+
+                                    {{-- Reviews List --}}
                                     <div class="reply-comment cancel-review-wrap">
-                                        <div
-                                            class="d-flex mb_24 gap-20 align-items-center justify-content-between flex-wrap">
-                                            <h5 class="">03 Comments</h5>
-                                            <div class="d-flex align-items-center gap-12">
-                                                <div class="text-caption-1">Sort by:</div>
-                                                <div class="tf-dropdown-sort" data-bs-toggle="dropdown">
-                                                    <div class="btn-select">
-                                                        <span class="text-sort-value">Most Recent</span>
-                                                        <span class="icon icon-arrow-down"></span>
-                                                    </div>
-                                                    <div class="dropdown-menu">
-                                                        <div class="select-item active">
-                                                            <span class="text-value-item">Most Recent</span>
-                                                        </div>
-                                                        <div class="select-item">
-                                                            <span class="text-value-item">Oldest</span>
-                                                        </div>
-                                                        <div class="select-item">
-                                                            <span class="text-value-item">Most Popular</span>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
+                                        <div class="d-flex mb_24 gap-20 align-items-center justify-content-between flex-wrap">
+                                            <h5>{{ str_pad($reviewsCount, 2, '0', STR_PAD_LEFT) }} Yorum</h5>
                                         </div>
                                         <div class="reply-comment-wrap">
-                                            <div class="reply-comment-item">
-                                                <div class="user">
-                                                    <div class="image">
-                                                        <img src="images/collections/collection-circle-9.jpg"
-                                                             alt="">
+                                            @forelse($reviews as $review)
+                                                <div class="reply-comment-item">
+                                                    <div class="user">
+                                                        <div class="image">
+                                                            <div style="width: 50px; height: 50px; border-radius: 50%; background: #f0f0f0; display: flex; align-items: center; justify-content: center; font-weight: 600; color: #666;">
+                                                                {{ strtoupper(substr($review->user->name, 0, 1)) }}
+                                                            </div>
+                                                        </div>
+                                                        <div>
+                                                            <h6>
+                                                                <span class="fw-6">{{ $review->user->name }}</span>
+                                                                <span class="ms-2">
+                                                                    @for($i = 1; $i <= 5; $i++)
+                                                                        @if($i <= $review->rating)
+                                                                            <i class="icon icon-star" style="color: #ffc107; font-size: 12px;"></i>
+                                                                        @else
+                                                                            <i class="icon icon-star" style="color: #e0e0e0; font-size: 12px;"></i>
+                                                                        @endif
+                                                                    @endfor
+                                                                </span>
+                                                            </h6>
+                                                            <div class="day text_black-2">{{ $review->created_at->diffForHumans() }}</div>
+                                                        </div>
                                                     </div>
-                                                    <div>
-                                                        <h6>
-                                                            <a href="#" class="link">Superb quality apparel that
-                                                                exceeds expectations</a>
-                                                        </h6>
-                                                        <div class="day text_black-2">1 days ago</div>
-                                                    </div>
+                                                    <h6 class="mt-2 fw-6">{{ $review->title }}</h6>
+                                                    <p class="text_black-2 mt-1">{{ $review->content }}</p>
                                                 </div>
-                                                <p class="text_black-2">Great theme - we were looking for a theme
-                                                    with lots of built in features and flexibility and this was
-                                                    perfect. We expected to need to employ a developer to add a few
-                                                    finishing touches. But we actually managed to do everything
-                                                    ourselves. We did have one small query and the support given was
-                                                    swift and helpful.</p>
-                                            </div>
-                                            <div class="reply-comment-item type-reply">
-                                                <div class="user">
-                                                    <div class="image">
-                                                        <img src="images/collections/collection-circle-10.jpg"
-                                                             alt="">
+
+                                                {{-- Admin Reply --}}
+                                                @if($review->admin_reply)
+                                                    <div class="reply-comment-item type-reply">
+                                                        <div class="user">
+                                                            <div class="image">
+                                                                <div style="width: 50px; height: 50px; border-radius: 50%; background: #1a1a1a; display: flex; align-items: center; justify-content: center; font-weight: 600; color: #fff;">
+                                                                    <i class="icon icon-store"></i>
+                                                                </div>
+                                                            </div>
+                                                            <div>
+                                                                <h6>
+                                                                    <span class="fw-6">Mağaza Yanıtı</span>
+                                                                </h6>
+                                                                <div class="day text_black-2">{{ $review->admin_replied_at?->diffForHumans() }}</div>
+                                                            </div>
+                                                        </div>
+                                                        <p class="text_black-2 mt-2">{{ $review->admin_reply }}</p>
                                                     </div>
-                                                    <div>
-                                                        <h6>
-                                                            <a href="#" class="link">Reply from Modave</a>
-                                                        </h6>
-                                                        <div class="day text_black-2">1 days ago</div>
-                                                    </div>
+                                                @endif
+                                            @empty
+                                                <div class="text-center py-5">
+                                                    <i class="icon icon-comment" style="font-size: 48px; color: #ccc;"></i>
+                                                    <p class="text-muted mt-3">Henüz yorum yapılmamış. İlk yorumu siz yapın!</p>
                                                 </div>
-                                                <p class="text_black-2">We love to hear it! Part of what we love
-                                                    most about Modave is how much it empowers store owners like
-                                                    yourself to build a beautiful website without having to hire a
-                                                    developer :) Thank you for this fantastic review!</p>
-                                            </div>
-                                            <div class="reply-comment-item">
-                                                <div class="user">
-                                                    <div class="image">
-                                                        <img src="images/collections/collection-circle-9.jpg"
-                                                             alt="">
-                                                    </div>
-                                                    <div>
-                                                        <h6>
-                                                            <a href="#" class="link">Superb quality apparel that
-                                                                exceeds expectations</a>
-                                                        </h6>
-                                                        <div class="day text_black-2">1 days ago </div>
-                                                    </div>
-                                                </div>
-                                                <p class="text_black-2">Great theme - we were looking for a theme
-                                                    with lots of built in features and flexibility and this was
-                                                    perfect. We expected to need to employ a developer to add a few
-                                                    finishing touches. But we actually managed to do everything
-                                                    ourselves. We did have one small query and the support given was
-                                                    swift and helpful.</p>
-                                            </div>
+                                            @endforelse
                                         </div>
                                     </div>
-                                    <form class="form-write-review write-review-wrap">
-                                        <div class="heading">
-                                            <h5>Write a review:</h5>
-                                            <div class="list-rating-check">
-                                                <input type="radio" id="star5" name="rate" value="5" />
-                                                <label for="star5" title="text"></label>
-                                                <input type="radio" id="star4" name="rate" value="4" />
-                                                <label for="star4" title="text"></label>
-                                                <input type="radio" id="star3" name="rate" value="3" />
-                                                <label for="star3" title="text"></label>
-                                                <input type="radio" id="star2" name="rate" value="2" />
-                                                <label for="star2" title="text"></label>
-                                                <input type="radio" id="star1" name="rate" value="1" />
-                                                <label for="star1" title="text"></label>
-                                            </div>
-                                        </div>
-                                        <div class="form-content">
-                                            <fieldset class="box-field">
-                                                <label class="label">Review Title</label>
-                                                <input type="text" placeholder="Give your review a title"
-                                                       name="text" tabindex="2" value="" aria-required="true"
-                                                       required="">
-                                            </fieldset>
-                                            <fieldset class="box-field">
-                                                <label class="label">Review</label>
-                                                <textarea rows="4" placeholder="Write your comment here"
-                                                          tabindex="2" aria-required="true" required=""></textarea>
-                                            </fieldset>
-                                            <div class="box-field group-2">
-                                                <fieldset>
-                                                    <input type="text" placeholder="You Name (Public)" name="text"
-                                                           tabindex="2" value="" aria-required="true" required="">
-                                                </fieldset>
-                                                <fieldset>
-                                                    <input type="email" placeholder="Your email (private)"
-                                                           name="email" tabindex="2" value="" aria-required="true"
-                                                           required="">
-                                                </fieldset>
-                                            </div>
-                                            <div class="box-check">
-                                                <input type="checkbox" name="availability" class="tf-check"
-                                                       id="check1">
-                                                <label class="text_black-2" for="check1">Save my name, email, and
-                                                    website in this browser for the next time I comment.</label>
-                                            </div>
-                                        </div>
-                                        <div class="button-submit">
-                                            <button class="tf-btn btn-fill animate-hover-btn" type="submit">Submit
-                                                Reviews</button>
-                                        </div>
-                                    </form>
+
+                                    {{-- Review Form --}}
+                                    @auth
+                                        @if(!$userReview && $hasPurchased)
+                                            <form class="form-write-review write-review-wrap" action="{{ route('review.store', $product->slug) }}" method="POST">
+                                                @csrf
+                                                <div class="heading">
+                                                    <h5>Yorum Yaz:</h5>
+                                                    <div class="list-rating-check">
+                                                        <input type="radio" id="star5" name="rating" value="5" required />
+                                                        <label for="star5" title="5 Yıldız"></label>
+                                                        <input type="radio" id="star4" name="rating" value="4" />
+                                                        <label for="star4" title="4 Yıldız"></label>
+                                                        <input type="radio" id="star3" name="rating" value="3" />
+                                                        <label for="star3" title="3 Yıldız"></label>
+                                                        <input type="radio" id="star2" name="rating" value="2" />
+                                                        <label for="star2" title="2 Yıldız"></label>
+                                                        <input type="radio" id="star1" name="rating" value="1" />
+                                                        <label for="star1" title="1 Yıldız"></label>
+                                                    </div>
+                                                    @error('rating')
+                                                        <span class="text-danger small">{{ $message }}</span>
+                                                    @enderror
+                                                </div>
+                                                <div class="form-content">
+                                                    <fieldset class="box-field">
+                                                        <label class="label">Yorum Başlığı</label>
+                                                        <input type="text" placeholder="Yorumunuza bir başlık verin"
+                                                               name="title" tabindex="2" value="{{ old('title') }}" aria-required="true"
+                                                               required>
+                                                        @error('title')
+                                                            <span class="text-danger small">{{ $message }}</span>
+                                                        @enderror
+                                                    </fieldset>
+                                                    <fieldset class="box-field">
+                                                        <label class="label">Yorumunuz</label>
+                                                        <textarea rows="4" placeholder="Ürün hakkındaki düşüncelerinizi yazın"
+                                                                  name="content" tabindex="2" aria-required="true" required>{{ old('content') }}</textarea>
+                                                        @error('content')
+                                                            <span class="text-danger small">{{ $message }}</span>
+                                                        @enderror
+                                                    </fieldset>
+                                                </div>
+                                                <div class="button-submit">
+                                                    <button class="tf-btn btn-fill animate-hover-btn" type="submit">
+                                                        Yorumu Gönder
+                                                    </button>
+                                                </div>
+                                            </form>
+                                        @endif
+                                    @endauth
                                 </div>
                             </div>
                             <div class="widget-content-inner">

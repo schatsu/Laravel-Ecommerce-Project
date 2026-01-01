@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use App\Enums\ProductVariationType;
+use App\Enums\Admin\ProductVariationType;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Spatie\Sluggable\HasSlug;

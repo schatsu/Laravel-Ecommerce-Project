@@ -31,4 +31,15 @@ enum OrderStatusEnum: string
             self::CANCELLED => 'danger',
         };
     }
+
+    public function icon(): string
+    {
+        return match($this) {
+            self::PENDING => 'icon-time',
+            self::PROCESSING => 'icon-box',
+            self::SHIPPED => 'icon-car-order',
+            self::DELIVERED => 'icon-check',
+            self::CANCELLED => 'icon-close',
+        };
+    }
 }
