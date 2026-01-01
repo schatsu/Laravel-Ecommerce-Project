@@ -16,17 +16,6 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-//        $superAdmin = User::query()->create([
-//            'name' => 'Ata Ziya',
-//            'surname' => 'Şireci',
-//            'slug' => 'ata-ziya-sireci',
-//            'email' => 'atasireci@gmail.com',
-//            'password' => Hash::make('password'),
-//            'email_verified_at' => now(),
-//            'created_at' => now(),
-//            'updated_at' => now(),
-//        ]);
-
         $this->call([
             CountrySeeder::class,
             CategorySeeder::class,
