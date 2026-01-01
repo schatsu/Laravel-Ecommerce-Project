@@ -155,7 +155,6 @@ class CheckoutController extends Controller
 
         $use3DSecure = $request->has('use_3d_secure');
 
-        dd($use3DSecure);
 
         if ($use3DSecure) {
             $result = $this->iyzicoService->create3DSecurePayment(
@@ -166,6 +165,7 @@ class CheckoutController extends Controller
                 $shippingAddress,
                 $request->installment ?? 1
             );
+            dd($result);
 
             if ($result->getStatus() !== 'success') {
                 return redirect()->route('checkout.payment-form', $order->hashid())
