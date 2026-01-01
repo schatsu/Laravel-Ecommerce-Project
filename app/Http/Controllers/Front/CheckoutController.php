@@ -133,12 +133,12 @@ class CheckoutController extends Controller
 
     public function pay(PaymentRequest $request): View|RedirectResponse
     {
-        dd($request->all());
         $user = auth()->user();
 
         $order = Order::query()
             ->whereRelation('user', 'id', $user?->id)
             ->findOrFail($request->order_id);
+        dd($order);
 
         $expireParts = explode('/', $request->expire_date);
         $cardData = [
