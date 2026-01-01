@@ -152,9 +152,10 @@ class CheckoutController extends Controller
         $billingAddress = session('checkout.billing_address', []);
         $shippingAddress = session('checkout.shipping_address', []);
 
-        dd($billingAddress, $shippingAddress);
 
         $use3DSecure = $request->has('use_3d_secure');
+
+        dd($use3DSecure);
 
         if ($use3DSecure) {
             $result = $this->iyzicoService->create3DSecurePayment(
