@@ -125,7 +125,7 @@ class IyzicoService
             $basketItems[] = $basketItem;
         }
 
-        // Kargo varsa sepete ekle
+
         if ($order->shipping_cost > 0) {
             $shippingItem = new BasketItem();
             $shippingItem->setId('shipping');
@@ -233,9 +233,7 @@ class IyzicoService
         return \Iyzipay\Model\Payment::create($request, $this->options);
     }
 
-    /**
-     * 3D Secure callback sonrası ödemeyi tamamla
-     */
+
     public function complete3DSecurePayment(string $paymentId): ThreedsPayment
     {
         $request = new CreateThreedsPaymentRequest();
@@ -246,22 +244,18 @@ class IyzicoService
         return ThreedsPayment::create($request, $this->options);
     }
 
-    /**
-     * Ödeme başarılı mı kontrol et
-     */
+
     public function isPaymentSuccessful($result): bool
     {
-        // 3D Secure tamamlamada paymentStatus null gelebilir, sadece status kontrolü yeterli
         if ($result->getStatus() !== 'success') {
             return false;
         }
-        
-        // Hata varsa başarısız
+
+
         if ($result->getErrorCode() !== null) {
             return false;
         }
-        
-        // paymentStatus varsa SUCCESS olmalı, yoksa status success yeterli
+
         $paymentStatus = $result->getPaymentStatus();
         return $paymentStatus === null || $paymentStatus === 'SUCCESS';
     }
