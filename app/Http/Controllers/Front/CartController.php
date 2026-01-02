@@ -29,7 +29,17 @@ class CartController extends Controller
         $cart = $this->cartService->getCart();
         $cart->load('items.product.media', 'items.variation', 'coupon');
 
-        return view('app.cart.index', compact('cart'));
+        // admin panelinden dinamik bir şekilde yönetilecek şimdilik böyle
+        $freeShippingThreshold = 450000;
+        $shippingProgress = min(($cart->subtotal / $freeShippingThreshold) * 100, 100);
+        $shippingRemaining = max($freeShippingThreshold - $cart->subtotal, 0);
+
+        return view('app.cart.index', compact(
+            'cart',
+            'freeShippingThreshold',
+            'shippingProgress',
+            'shippingRemaining'
+        ));
     }
 
     public function show(): JsonResponse

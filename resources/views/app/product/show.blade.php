@@ -330,8 +330,7 @@
                                         <p class="fw-6">Güvenli <br> Ödeme</p>
                                     </div>
                                     <div class="tf-payment">
-                                        <img src="{{ asset('front/images/shop/products/visa.png') }}" alt="Visa">
-                                        <img src="{{ asset('front/images/shop/products/mastercard.png') }}" alt="Mastercard">
+                                        <img width="344px" src="{{ asset('front/images/brand/logo_band_colored.svg') }}" alt="Payment Methods">
                                     </div>
                                 </div>
 
